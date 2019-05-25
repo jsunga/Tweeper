@@ -13,22 +13,40 @@ const Label = styled.h1`
 `
 
 export default class Register extends Component {
+
+  state = {
+    username: '',
+    firstname: '',
+    lastname: '',
+    password: '',
+  }
+
+  register = e => {
+    e.preventDefault()
+    const { username, firstname, lastname, password } = this.state
+    if (username.length < 2 || firstname.length < 2 || lastname.length < 2 || password.length < 6) {
+      alert('Invalid Submission')
+    } else {
+      console.log('register')
+    }
+  }
+
   render() {
     return (
       <Container>
-        <Form onSubmit={this.login}>
+        <Form onSubmit={this.register}>
           <Label>Create an account</Label>
           <Form.Field>
-            <input placeholder='Username' />
+            <input placeholder='*Username' onChange={e => {this.setState({ username: e.target.value })}}/>
           </Form.Field>
           <Form.Field>
-            <input placeholder='First Name' />
+            <input placeholder='*First Name' onChange={e => {this.setState({ firstname: e.target.value })}}/>
           </Form.Field>
           <Form.Field>
-            <input placeholder='Last Name' />
+            <input placeholder='*Last Name' onChange={e => {this.setState({ lastname: e.target.value })}}/>
           </Form.Field>
           <Form.Field>
-            <input type='password' placeholder='Password' />
+            <input type='password' placeholder='*Password' onChange={e => {this.setState({ password: e.target.value })}}/>
           </Form.Field>
           <Form.Field>
             <Checkbox label='I agree to the TERMS AND CONDITIONS' />

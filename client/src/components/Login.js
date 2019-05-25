@@ -14,9 +14,19 @@ const Label = styled.h1`
 
 export default class Login extends Component {
 
+  state = {
+    username: '',
+    password: '',
+  }
+
   login = e => {
     e.preventDefault()
-    console.log('login')
+    const { username, password } = this.state
+    if (username.length < 2 || password.length < 6) {
+      alert('Invalid Submission')
+    } else {
+      console.log('login')
+    }
   }
   
   render() {
@@ -25,10 +35,10 @@ export default class Login extends Component {
         <Form onSubmit={this.login}>
           <Label>Log in to Tweeper</Label>
           <Form.Field>
-            <input placeholder='Username' />
+            <input placeholder='Username' onChange={e => {this.setState({ username: e.target.value })}}/>
           </Form.Field>
           <Form.Field>
-            <input type='password' placeholder='Password' />
+            <input type='password' placeholder='Password' onChange={e => {this.setState({ password: e.target.value })}}/>
           </Form.Field>
           <Form.Field>
             <Checkbox label='Remember me' />
