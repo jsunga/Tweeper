@@ -23,8 +23,8 @@ router.post('/', isAuthenticated, (req, res) => {
   const userId = req.user.user_id
   const { tweepId } = req.body
   const likeArr = [userId, tweepId]
-  db.one(`INSERT INTO likes (replier_user_id, tweep_id)
-    VALUES ($1, $2) returning replier_user_id`, likeArr
+  db.one(`INSERT INTO likes (liker_user_id, tweep_id)
+    VALUES ($1, $2) returning liker_user_id`, likeArr
   )
   .then(data => {
     res.status(201)

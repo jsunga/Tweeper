@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Redirect } from 'react-router-dom'
 import { Icon } from 'semantic-ui-react'
 import Login from './Login'
 import Register from './Register'
@@ -45,6 +46,8 @@ export default class Home extends Component {
 
   state = {
     render: 'login',
+    user_id: localStorage.getItem('user_id'),
+    isAuth: localStorage.getItem('isAuth'),
   }
 
   register = () => {
@@ -57,13 +60,16 @@ export default class Home extends Component {
 
   getRender = () => {
     if (this.state.render === 'login') {
-      return <Login event={this.register}/>
+      return <Login event={this.register} {...this.props}/>
     } else {
-      return <Register event={this.login}/>
+      return <Register event={this.login} {...this.props}/>
     }
   }
 
   render() {
+    if (this.state.isAuth === 'true') {
+      return <Redirect to="/home"/>
+    }
     //desktop view only for now
     return (
       <Container>

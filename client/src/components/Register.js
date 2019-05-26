@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Button, Checkbox, Form, Message } from 'semantic-ui-react'
+import { Button, Checkbox, Form, Message, Loader } from 'semantic-ui-react'
 import styled from 'styled-components'
+import axios from 'axios'
 
 const Container = styled.div`
   max-width: 500px;
@@ -19,6 +20,7 @@ export default class Register extends Component {
     firstname: '',
     lastname: '',
     password: '',
+    isLoading: false,
   }
 
   register = e => {
@@ -27,7 +29,24 @@ export default class Register extends Component {
     if (username.length < 2 || firstname.length < 2 || lastname.length < 2 || password.length < 6) {
       alert('Invalid Submission')
     } else {
-      console.log('register')
+      this.setState({ isLoading: true })
+      axios.post('/api/user/register', {
+        username: this.state.username.toLowerCase(),
+        firstname: this.state.firstname.toLowerCase(),
+        lastname: this.state.lastname.toLowerCase(),
+        password: this.state.password,
+      })
+      .then(res => {
+        localStorage.setItem('user_id', res.data.user_id)
+        localStorage.setItem('isAuth', 'true')
+        this.props.history.push('/home')
+      })
+      .catch(err => {
+        if (err.response.data === 'username already used') {
+          this.setState({ isLoading: false })
+          alert('Username already used')
+        }
+      })
     }
   }
 
@@ -51,7 +70,11 @@ export default class Register extends Component {
           <Form.Field>
             <Checkbox label='I agree to the TERMS AND CONDITIONS' />
           </Form.Field>
-          <Button fluid primary>SIGN UP</Button>
+          {this.state.isLoading === false ? (
+            <Button fluid primary>SIGN UP</Button>
+          ) : (
+            <Loader active inline='centered' />
+          )}
         </Form>
         <Message style={{textAlign: 'right'}}>
           Already have an account? <Button size='mini' onClick={this.props.event}>Log In</Button>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button } from 'semantic-ui-react'
+import { Button, Search, Header, Image, Modal } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -14,7 +14,17 @@ const Container = styled.div`
   flex-direction: row;
 `
 
+const Left = styled.div`
+  width: 50%;
+`
+
+const Right = styled.div`
+  width: 50%;
+`
+
 const Wrapper = styled.div`
+  display: flex;
+  flex-direction: row;
   width: 1200px
   margin: 0 auto;
 `
@@ -27,10 +37,19 @@ const Link = styled.div`
   margin-right: 40px;
 `
 
-const StyledButton = styled(Button)`
+const Tweep = styled(Button)`
   && {
     float: right;
     margin-top: 7px;
+    margin-left: 20px;
+  }
+`
+
+const Logout = styled(Button)`
+  && {
+    float: right;
+    margin-top: 11px;
+    margin-left: 20px;
   }
 `
 
@@ -42,15 +61,43 @@ const Nav = styled(NavLink)`
   }
 `
 
+const searchStyle = {
+  float: 'right',
+  marginTop: '6px',
+}
+
 export default class Navbar extends Component {
+
+  logout = () => {
+    localStorage.removeItem('user_id')
+    localStorage.removeItem('isAuth')
+    this.props.history.push('/')
+  }
+
   render() {
     return (
       <Container>
         <Wrapper>
-          <Link><Nav to="/">Home</Nav></Link>
-          <Link><Nav to="/messages">Messages</Nav></Link>
-          <Link><Nav to="/profile">Profile</Nav></Link>
-          <StyledButton inverted>Tweep</StyledButton>
+          <Left>
+            <Link><Nav to="/home">Home</Nav></Link>
+            <Link><Nav to="/messages">Messages</Nav></Link>
+            <Link><Nav to="/profile">Profile</Nav></Link>
+          </Left>
+          <Right>
+            <Logout size='mini' onClick={this.logout}>Logout</Logout>
+            <Modal trigger={<Tweep inverted>Tweep</Tweep>} centered={false}>
+              <Modal.Header>Select a Photo</Modal.Header>
+              <Modal.Content image>
+                <Image wrapped size='medium' src='/images/avatar/large/rachel.png' />
+                <Modal.Description>
+                  <Header>Default Profile Image</Header>
+                  <p>We've found the following gravatar image associated with your e-mail address.</p>
+                  <p>Is it okay to use this photo?</p>
+                </Modal.Description>
+              </Modal.Content>
+            </Modal>
+            <Search style={searchStyle}/>
+          </Right>
         </Wrapper>
       </Container>
     )

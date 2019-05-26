@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Button, Checkbox, Form, Message } from 'semantic-ui-react'
+import { Button, Checkbox, Form, Message, Loader } from 'semantic-ui-react'
 import styled from 'styled-components'
+import axios from 'axios'
 
 const Container = styled.div`
   max-width: 500px;
@@ -17,6 +18,7 @@ export default class Login extends Component {
   state = {
     username: '',
     password: '',
+    isLoading: false,
   }
 
   login = e => {
@@ -25,7 +27,22 @@ export default class Login extends Component {
     if (username.length < 2 || password.length < 6) {
       alert('Invalid Submission')
     } else {
-      console.log('login')
+      this.setState({ isLoading: true })
+      axios.post('/api/user/login', {
+        username: this.state.username.toLowerCase(),
+        password: this.state.password,
+      })
+      .then(res => {
+        localStorage.setItem('user_id', res.data.user_id)
+        localStorage.setItem('isAuth', 'true')
+        this.props.history.push('/home')
+      })
+      .catch(err => {
+        if (err.response.data === 'login failed') {
+          this.setState({ isLoading: false })
+          alert('Invalid email or password')
+        }
+      })
     }
   }
   
@@ -43,7 +60,11 @@ export default class Login extends Component {
           <Form.Field>
             <Checkbox label='Remember me' />
           </Form.Field>
-          <Button fluid primary>LOG IN</Button>
+          {this.state.isLoading === false ? (
+            <Button fluid primary>LOG IN</Button>
+          ) : (
+            <Loader active inline='centered' />
+          )}
         </Form>
         <Message style={{textAlign: 'right'}}>
           New to us? <Button size='mini' onClick={this.props.event}>Sign Up</Button>
