@@ -1,0 +1,18 @@
+# dependencies
+/node_modules
+
+# environment
+.env
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+pm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.vscode/
