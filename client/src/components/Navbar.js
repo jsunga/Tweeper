@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Search, Header, Image, Modal } from 'semantic-ui-react'
+import { Button, Search } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -35,14 +35,6 @@ const Link = styled.div`
   display: inline-block;
   margin-top: 15px;
   margin-right: 40px;
-`
-
-const Tweep = styled(Button)`
-  && {
-    float: right;
-    margin-top: 7px;
-    margin-left: 20px;
-  }
 `
 
 const Logout = styled(Button)`
@@ -85,17 +77,6 @@ export default class Navbar extends Component {
           </Left>
           <Right>
             <Logout size='mini' onClick={this.logout}>Logout</Logout>
-            <Modal trigger={<Tweep inverted>Tweep</Tweep>} centered={false}>
-              <Modal.Header>Select a Photo</Modal.Header>
-              <Modal.Content image>
-                <Image wrapped size='medium' src='/images/avatar/large/rachel.png' />
-                <Modal.Description>
-                  <Header>Default Profile Image</Header>
-                  <p>We've found the following gravatar image associated with your e-mail address.</p>
-                  <p>Is it okay to use this photo?</p>
-                </Modal.Description>
-              </Modal.Content>
-            </Modal>
             <Search style={searchStyle}/>
           </Right>
         </Wrapper>
