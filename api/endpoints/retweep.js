@@ -3,11 +3,11 @@ const router = express.Router()
 const { db } = require('../db')
 const isAuthenticated = require('../authentification/isAuthenticated')
 
-//get all the tweeps of a user
+//get all user retweeps
 router.get('/get/:user_id', isAuthenticated, (req, res) => {
   const userId = req.params.user_id
 
-  db.any(`SELECT * FROM tweeps WHERE user_id=$1`, [userId])
+  db.any(`SELECT * FROM retweeps WHERE user_id=$1`, [userId])
   .then(data => {
     res.send(data)
   })
@@ -18,18 +18,17 @@ router.get('/get/:user_id', isAuthenticated, (req, res) => {
   
 })
 
-//post a tweep
+//retweep
 router.post('/', isAuthenticated, (req, res) => {
-  const { content } = req.body
   const userId = req.user.user_id
-  const tweepArr = [userId, content]
-  db.one(`INSERT INTO tweeps(
-    user_id, content ) VALUES ($1, $2) returning tweep_id`,
-    tweepArr
+  const { tweepId } = req.body
+  const retweepArr = [userId, tweepId]
+  db.one(`INSERT INTO retweeps (user_id, tweep_id)
+    VALUES ($1, $2) returning tweep_id`, retweepArr
   )
-  .then(tweep_id => {
+  .then(data => {
     res.status(201)
-    res.send(tweep_id)
+    res.send(data)
   })
   .catch(err => {
     console.log(err)

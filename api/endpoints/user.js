@@ -8,13 +8,13 @@ const validator = require('../authentification/validate')
 
 const SALT = 8
 
-//get the information details of a user
+//get basic information of a user
 router.get('/get/:user_id', isAuthenticated, (req, res) => {
   const userId = req.params.user_id
 
-  db.any(`SELECT username, firstname, lastname FROM users WHERE user_id=$1`, [userId])
-  .then(user => {
-    res.send(user)
+  db.one(`SELECT * FROM users WHERE user_id=$1`, [userId])
+  .then(data => {
+    res.send(data)
   })
   .catch(err => {
     console.log(err)
