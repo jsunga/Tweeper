@@ -98,6 +98,7 @@ export default class Profile extends Component {
 
   state = {
     user_details: [],
+    tweeps: [],
     user_id: localStorage.getItem('user_id'),
     isAuth: localStorage.getItem('isAuth'),
   }
@@ -118,6 +119,14 @@ export default class Profile extends Component {
         data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
         data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
         this.setState({ user_details: data })
+        axios.get(`/api/tweep/get/${this.state.user_details.user_id}`)
+        .then(res => {
+          console.log(res.data)
+          this.setState({ tweeps: res.data })
+        })
+        .catch(err => {
+          console.log(err)
+        })
       }
     })
     .catch(err => {

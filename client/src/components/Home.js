@@ -172,7 +172,6 @@ export default class Home extends Component {
               <TextArea rows={5} placeholder={`What's happening?`} style={{width: '550px', resize: 'none'}} value={this.state.tweep} onChange={e => {this.setState({ tweep: e.target.value })}}/>
               <Button primary style={buttonStyle} onClick={this.tweep}>Tweep</Button>
             </Tweep>
-            hello
           </Feed>
         </Container>
       </Body>

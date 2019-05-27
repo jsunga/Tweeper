@@ -3,6 +3,18 @@ const router = express.Router()
 const { db } = require('../db')
 const isAuthenticated = require('../authentification/isAuthenticated')
 
+//get tweeps of user
+router.get('/get/:user_id', (req, res) => {
+  const userId = req.params.user_id
+  db.many(`SELECT * FROM tweeps WHERE user_id=$1`, [userId])
+  .then(data => {
+    res.send(data)
+  })
+  .catch(() => {
+    res.send('no tweeps')
+  })
+})
+
 //post a tweep
 router.post('/', isAuthenticated, (req, res) => {
   const { content } = req.body

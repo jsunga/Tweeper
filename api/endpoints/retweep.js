@@ -3,6 +3,18 @@ const router = express.Router()
 const { db } = require('../db')
 const isAuthenticated = require('../authentification/isAuthenticated')
 
+//get retweeps of user
+router.get('/get/:tweep_id', (req ,res) => {
+  const tweepId = req.params.tweep_id
+  db.many(`SELECT * FROM tweeps WHERE tweep_id=$1`, [tweepId])
+  .then(data => {
+    res.send(data)
+  })
+  .catch(() => {
+    res.send('no tweeps')
+  })
+})
+
 //retweep
 router.post('/', isAuthenticated, (req, res) => {
   const userId = req.user.user_id
