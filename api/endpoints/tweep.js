@@ -3,21 +3,6 @@ const router = express.Router()
 const { db } = require('../db')
 const isAuthenticated = require('../authentification/isAuthenticated')
 
-//get all the tweeps of a user
-router.get('/get/:user_id', isAuthenticated, (req, res) => {
-  const userId = req.params.user_id
-
-  db.any(`SELECT * FROM tweeps WHERE user_id=$1`, [userId])
-  .then(data => {
-    res.send(data)
-  })
-  .catch(err => {
-    console.log(err)
-    res.sendStatus(204)
-  })
-  
-})
-
 //post a tweep
 router.post('/', isAuthenticated, (req, res) => {
   const { content } = req.body
@@ -27,9 +12,9 @@ router.post('/', isAuthenticated, (req, res) => {
     user_id, content ) VALUES ($1, $2) returning tweep_id`,
     tweepArr
   )
-  .then(tweep_id => {
-    res.status(201)
-    res.send(tweep_id)
+  .then(() => {
+    db.one(`UPDATE users SET tweeps = tweeps + 1 WHERE user_id=$1 returning user_id`, [userId])
+    res.send('success')
   })
   .catch(err => {
     console.log(err)

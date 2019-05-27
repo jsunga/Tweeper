@@ -23,7 +23,7 @@ export default class ErrorComponent extends Component {
       <>
         <Container>
           <Header>404</Header>
-          <Body>Oops! Something went wrong..</Body>
+          <Body>Oops! This page does not exist..</Body>
         </Container>
       </>
     )

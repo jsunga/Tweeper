@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button, Search } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
+import axios from 'axios'
 
 const Container = styled.div`
   position: sticky;
@@ -60,6 +61,21 @@ const searchStyle = {
 
 export default class Navbar extends Component {
 
+  state = {
+    user_id: localStorage.getItem('user_id'),
+    username: '',
+  }
+
+  componentDidMount() {
+    axios.get(`/api/user/get/${this.state.user_id}`)
+    .then(res => {
+      this.setState({ username: res.data.username })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
   logout = () => {
     localStorage.removeItem('user_id')
     localStorage.removeItem('isAuth')
@@ -73,7 +89,7 @@ export default class Navbar extends Component {
           <Left>
             <Link><Nav to="/home">Home</Nav></Link>
             <Link><Nav to="/messages">Messages</Nav></Link>
-            <Link><Nav to="/profile">Profile</Nav></Link>
+            <Link><Nav to={`/user/${this.state.username}`}>Profile</Nav></Link>
           </Left>
           <Right>
             <Logout size='mini' onClick={this.logout}>Logout</Logout>

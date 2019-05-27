@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { TextArea, Button } from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 import Navbar from './Navbar'
 import styled from 'styled-components'
@@ -12,7 +12,7 @@ const Container = styled.div`
   flex-direction: row;
 `
 
-const Profile = styled.div`
+const Profiler = styled.div`
   width: 305px;
   margin-top: 15px;
 `
@@ -25,7 +25,8 @@ const Feed = styled.div`
 `
 
 const Tweep = styled.div`
-  margin: 20px;
+  text-align: center;
+  margin-top: 20px;
 `
 
 const Body = styled.div`
@@ -93,48 +94,35 @@ const Div = styled.div`
   padding-top: 5px;
 `
 
-const buttonStyle = {
-  float: 'right',
-  marginRight: '6px'
-}
-
-export default class Home extends Component {
+export default class Profile extends Component {
 
   state = {
+    user_details: [],
     user_id: localStorage.getItem('user_id'),
     isAuth: localStorage.getItem('isAuth'),
-    tweep: '',
-    user_details: [],
   }
 
   componentDidMount() {
-    axios.get(`/api/user/get/${this.state.user_id}`)
+    window.scrollTo(0, 0)
+    const { handle } = this.props.match.params
+    this.getUser(handle)
+  }
+
+  getUser = handle => {
+    axios.get(`/api/user/retrieve/${handle}`)
     .then(res => {
-      let data = res.data
-      data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
-      data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
-      this.setState({ user_details: data })
+      if (res.data.length === 0) {
+        this.props.history.push('/404')
+      } else {
+        let data = res.data
+        data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
+        data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
+        this.setState({ user_details: data })
+      }
     })
     .catch(err => {
       console.log(err)
     })
-  }
-
-  tweep = () => {
-    if (this.state.tweep.length === 0) {
-      alert('No empty tweep')
-    } else {
-      axios.post('/api/tweep', {
-        content: this.state.tweep
-      })
-      .then(() => {
-        this.setState({ tweep: '' })
-        console.log('success')
-      })
-      .catch(err => {
-        console.log(err.response.data)
-      })
-    }
   }
 
   render() {
@@ -146,9 +134,9 @@ export default class Home extends Component {
       <Body>
         <Navbar {...this.props}/>
         <Container>
-          <Profile>
+          <Profiler>
             <Details>
-              <Picture><Image src={this.state.user_details.image_url}/></Picture>
+              <Picture><Image src={this.state.user_details.image_url} alt="pic"/></Picture>
               <Name>{user_details.firstname} {user_details.lastname}</Name>
               <Username>@{user_details.username}</Username>
               <Stats>
@@ -166,13 +154,11 @@ export default class Home extends Component {
                 </Followers>
               </Stats>
             </Details>
-          </Profile>
+          </Profiler>
           <Feed>
             <Tweep>
-              <TextArea rows={5} placeholder={`What's happening?`} style={{width: '550px', resize: 'none'}} value={this.state.tweep} onChange={e => {this.setState({ tweep: e.target.value })}}/>
-              <Button primary style={buttonStyle} onClick={this.tweep}>Tweep</Button>
+
             </Tweep>
-            hello
           </Feed>
         </Container>
       </Body>

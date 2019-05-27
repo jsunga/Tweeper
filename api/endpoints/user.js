@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { db } = require('../db')
 const bcrypt = require('bcryptjs')
+const { assetResolver } = require('../utils')
 const { authenticate } = require('../authentification/passport')
 const isAuthenticated = require('../authentification/isAuthenticated')
 const validator = require('../authentification/validate')
@@ -14,6 +15,23 @@ router.get('/get/:user_id', isAuthenticated, (req, res) => {
 
   db.one(`SELECT * FROM users WHERE user_id=$1`, [userId])
   .then(data => {
+    const image = data.image_url
+    data.image_url = assetResolver(image)
+    res.send(data)
+  })
+  .catch(err => {
+    console.log(err)
+    res.sendStatus(204)
+  })
+})
+
+router.get('/retrieve/:user', (req, res) => {
+  const username = req.params.user
+
+  db.one(`SELECT * FROM users WHERE username=$1`, [username])
+  .then(data => {
+    const image = data.image_url
+    data.image_url = assetResolver(image)
     res.send(data)
   })
   .catch(err => {

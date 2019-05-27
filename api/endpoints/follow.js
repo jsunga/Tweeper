@@ -22,34 +22,6 @@ router.get('/get_following/:user_id', isAuthenticated, (req, res) => {
   })
 })
 
-//get how many users a user is following
-router.get('/get_num_following/:user_id', isAuthenticated, (req, res) => {
-  const userId = req.params.user_id
-  
-  db.one(`SELECT COUNT(following_user_id), user_id FROM following GROUP BY user_id HAVING user_id=$1`, [userId])
-  .then(data => {
-    res.send(data)
-  })
-  .catch(error => {
-    console.log(error)
-    res.sendStatus(204)
-  })
-})
-
-//get how many followers a user has
-router.get('/get_num_followers/:user_id', isAuthenticated, (req, res) => {
-  const userId = req.params.user_id
-  
-  db.one(`SELECT COUNT(user_id), following_user_id FROM following GROUP BY following_user_id HAVING following_user_id=$1`, [userId])
-  .then(data => {
-    res.send(data)
-  })
-  .catch(error => {
-    console.log(error)
-    res.sendStatus(204)
-  })
-})
-
 //follow a user
 router.post('/', isAuthenticated, (req ,res) => {
   const userId = req.user.user_id
@@ -58,9 +30,9 @@ router.post('/', isAuthenticated, (req ,res) => {
   db.one(`INSERT INTO following (user_id, following_user_id)
     VALUES ($1, $2) returning following_user_id`, followArr
   )
-  .then(data => {
-    res.status(201)
-    res.send(data)
+  .then(() => {
+    db.one(`UPDATE users SET following = following + 1 WHERE user_id=$1`, [userId])
+    db.one(`UPDATE users SET follow = followers + 1 WHERE user_id=$1`, [following_userId])
   })
   .catch(err => {
     console.log(err)
