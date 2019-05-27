@@ -83,6 +83,7 @@ export default class Navbar extends Component {
   }
 
   render() {
+
     return (
       <Container>
         <Wrapper>
@@ -98,5 +99,6 @@ export default class Navbar extends Component {
         </Wrapper>
       </Container>
     )
+    
   }
 }

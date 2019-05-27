@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -17,15 +17,15 @@ const Body = styled.h1`
   text-align: center;
 `
 
-export default class ErrorComponent extends Component {
-  render() {
-    return (
-      <>
-        <Container>
-          <Header>404</Header>
-          <Body>Oops! This page does not exist..</Body>
-        </Container>
-      </>
-    )
-  }
+const ErrorComponent = () => {
+
+  return (
+    <Container>
+      <Header>404</Header>
+      <Body>Oops! This page does not exist..</Body>
+    </Container>
+  )
+
 }
+
+export default ErrorComponent

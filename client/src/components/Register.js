@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Checkbox, Form, Message, Loader } from 'semantic-ui-react'
+import { Button, Form, Message, Loader } from 'semantic-ui-react'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -51,6 +51,7 @@ export default class Register extends Component {
   }
 
   render() {
+
     return (
       <Container>
         <Form onSubmit={this.register}>
@@ -67,9 +68,6 @@ export default class Register extends Component {
           <Form.Field>
             <input type='password' placeholder='*Password' onChange={e => {this.setState({ password: e.target.value })}}/>
           </Form.Field>
-          <Form.Field>
-            <Checkbox label='I agree to the TERMS AND CONDITIONS' />
-          </Form.Field>
           {this.state.isLoading === false ? (
             <Button fluid primary>SIGN UP</Button>
           ) : (
@@ -81,5 +79,6 @@ export default class Register extends Component {
         </Message>
       </Container>
     )
+    
   }
 }

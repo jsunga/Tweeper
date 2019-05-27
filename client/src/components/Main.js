@@ -67,10 +67,11 @@ export default class Home extends Component {
   }
 
   render() {
+
     if (this.state.isAuth === 'true') {
       return <Redirect to="/home"/>
     }
-    //desktop view only for now
+
     return (
       <Container>
         <Left>
@@ -86,5 +87,6 @@ export default class Home extends Component {
         </Right>
       </Container>
     )
+
   }
 }

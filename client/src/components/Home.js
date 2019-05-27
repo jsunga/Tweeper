@@ -2,25 +2,31 @@ import React, { Component } from 'react'
 import { TextArea, Button } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 import Navbar from './Navbar'
+import Summary from './Summary'
+import Suggestion from './Suggestion'
 import styled from 'styled-components'
 import axios from 'axios'
 
 const Container = styled.div`
-  width: 1000px;
+  width: 1210px;
   margin: 0 auto;
   display: flex;
   flex-direction: row;
 `
 
-const Profile = styled.div`
+const ProfileWrapper = styled.div`
   width: 305px;
   margin-top: 15px;
 `
 
-const Feed = styled.div`
-  width: 750px;
+const FeedWrapper = styled.div`
+  width: 600px;
   background-color: white;
-  box-shadow: 0px 1px 1px #c9c7c7;
+  margin-top: 15px;
+`
+
+const SuggestionWrapper = styled.div`
+  width: 305px;
   margin-top: 15px;
 `
 
@@ -31,66 +37,6 @@ const Tweep = styled.div`
 const Body = styled.div`
   background-color: #e6ecf0;
   height: 100vh;
-`
-
-const Details = styled.div`
-  background-color: white;
-  box-shadow: 0px 1px 1px #c9c7c7;
-  margin-right: 10px;
-`
-
-const Image = styled.img`
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-`
-
-const Picture = styled.div`
-  padding-top: 10px;
-  text-align: center;
-`
-
-const Name = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  padding-left: 14px;
-`
-
-const Username = styled.div`
-  padding-left: 12px;
-  padding-top: 5px;
-`
-
-const Stats = styled.div`
-  margin-top: 10px;
-  width: 290px;
-  display: flex;
-  flex-direction: row;
-  padding-bottom: 15px;
-`
-
-const Tweeps = styled.div`
-  width: 31%;
-  font-weight: bold;
-  text-align: center;
-`
-
-const Following = styled.div`
-  width: 33%;
-  font-weight: bold;
-  text-align: center;
-`
-
-const Followers = styled.div`
-  width: 33%;
-  font-weight: bold;
-  text-align: center;
-`
-
-const Div = styled.div`
-  color: #2185d0;
-  font-size: 25px;
-  padding-top: 5px;
 `
 
 const buttonStyle = {
@@ -138,7 +84,6 @@ export default class Home extends Component {
   }
 
   render() {
-    const { user_details } = this.state
     if (this.state.isAuth !== 'true') {
       return <Redirect to="/"/>
     }
@@ -146,33 +91,14 @@ export default class Home extends Component {
       <Body>
         <Navbar {...this.props}/>
         <Container>
-          <Profile>
-            <Details>
-              <Picture><Image src={this.state.user_details.image_url}/></Picture>
-              <Name>{user_details.firstname} {user_details.lastname}</Name>
-              <Username>@{user_details.username}</Username>
-              <Stats>
-                <Tweeps>
-                  <span>Tweeps</span>
-                  <Div>{user_details.tweeps}</Div>
-                </Tweeps>
-                <Following>
-                  <span>Following</span>
-                  <Div>{user_details.following}</Div>
-                </Following>
-                <Followers>
-                  <span>Followers</span>
-                  <Div>{user_details.followers}</Div>
-                </Followers>
-              </Stats>
-            </Details>
-          </Profile>
-          <Feed>
+          <ProfileWrapper><Summary {...this.state}/></ProfileWrapper>
+          <FeedWrapper>
             <Tweep>
               <TextArea rows={5} placeholder={`What's happening?`} style={{width: '550px', resize: 'none'}} value={this.state.tweep} onChange={e => {this.setState({ tweep: e.target.value })}}/>
               <Button primary style={buttonStyle} onClick={this.tweep}>Tweep</Button>
             </Tweep>
-          </Feed>
+          </FeedWrapper>
+          <SuggestionWrapper><Suggestion/></SuggestionWrapper>
         </Container>
       </Body>
     )
