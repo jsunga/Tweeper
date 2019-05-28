@@ -15,8 +15,10 @@ const Routes = () => (
       <Route exact path="/user/:handle" render={props => (
         <Profile key={props.location.pathname} {...props} />)} 
       />
-      <Route exact path="/following" component={Following}/>
-      <Route exact path="/followers/:handle" render={props => (
+      <Route exact path="/user/:handle/following" render={props => (
+        <Following key={props.location.pathname} {...props} />)} 
+      />
+      <Route exact path="/user/:handle/followers" render={props => (
         <Followers key={props.location.pathname} {...props} />)} 
       />
       <Route exact path="/404" component={ErrorComponent} />

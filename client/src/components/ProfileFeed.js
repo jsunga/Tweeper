@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Comment, Form, Header } from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -20,7 +20,6 @@ export default class ProfileFeed extends Component {
   componentDidMount() {
     const { handle } =  this.props.match.params
     this.getDetails(handle)
-    console.log(this.props.match.params.handle)
   }
 
   getDetails = handle => {

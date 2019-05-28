@@ -22,6 +22,18 @@ router.get('/get_following/:user_id', isAuthenticated, (req, res) => {
   })
 })
 
+router.get('/get_followers/:user_id', isAuthenticated, (req, res) => {
+  const userId = req.params.user_id
+  db.any(`SELECT user_id FROM following WHERE following_user_id=$1`, [userId])
+  .then(data => {
+    res.send(data)
+  })
+  .catch(error => {
+    console.log(error)
+    res.sendStatus(204)
+  })
+})
+
 //follow a user
 router.post('/', isAuthenticated, (req ,res) => {
   const userId = req.user.user_id
