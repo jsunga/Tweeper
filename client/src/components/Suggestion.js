@@ -4,12 +4,12 @@ import styled from 'styled-components'
 const Container = styled.div`
   background-color: white;
   margin-left: 10px;
-  height: 195px;
+  height: 205px;
 `
 
 const Header = styled.h2`
-  text-align: center;
-  padding: 5px;
+  padding-top: 10px;
+  padding-left: 15px;
 `
 
 export default class Suggestion extends Component {

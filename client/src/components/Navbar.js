@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Search } from 'semantic-ui-react'
+import { Button, Search, Icon } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import axios from 'axios'
@@ -49,8 +49,8 @@ const Logout = styled(Button)`
 const Nav = styled(NavLink)`
   color: white;
   :hover {
-    text-decoration: underline;
-    color: white;
+    text-decoration: none;
+    color: #d1d1d1;
   }
 `
 
@@ -78,6 +78,7 @@ export default class Navbar extends Component {
 
   logout = () => {
     localStorage.removeItem('user_id')
+    localStorage.removeItem('username')
     localStorage.removeItem('isAuth')
     this.props.history.push('/')
   }
@@ -88,9 +89,9 @@ export default class Navbar extends Component {
       <Container>
         <Wrapper>
           <Left>
-            <Link><Nav to="/home">Home</Nav></Link>
-            <Link><Nav to="/messages">Messages</Nav></Link>
-            <Link><Nav to={`/user/${this.state.username}`}>Profile</Nav></Link>
+            <Link><Nav to="/home"><Icon name='home'/>Home</Nav></Link>
+            <Link><Nav to="/messages"><Icon name='envelope outline'/>Messages</Nav></Link>
+            <Link><Nav to={`/user/${this.state.username}`}><Icon name='address card outline'/>Profile</Nav></Link>
           </Left>
           <Right>
             <Logout size='mini' onClick={this.logout}>Logout</Logout>

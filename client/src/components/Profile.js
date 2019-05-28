@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
-import { Button } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 import Navbar from './Navbar'
 import Summary from './Summary'
+import Suggestion from './Suggestion'
+import ProfileFeed from './ProfileFeed'
 import styled from 'styled-components'
 import axios from 'axios'
 
 const Container = styled.div`
-  width: 1000px;
+  width: 1210px;
   margin: 0 auto;
   display: flex;
   flex-direction: row;
@@ -19,14 +20,14 @@ const ProfileWrapper = styled.div`
 `
 
 const FeedWrapper = styled.div`
-  width: 750px;
+  width: 600px;
   background-color: white;
   margin-top: 15px;
 `
 
-const Tweep = styled.div`
-  text-align: center;
-  margin-top: 20px;
+const SuggestionWrapper = styled.div`
+  width: 305px;
+  margin-top: 15px;
 `
 
 const Body = styled.div`
@@ -34,40 +35,27 @@ const Body = styled.div`
   height: 100vh;
 `
 
-export default class Profile extends Component {
+export default class Home extends Component {
 
   state = {
-    user_details: [],
-    tweeps: [],
     user_id: localStorage.getItem('user_id'),
     isAuth: localStorage.getItem('isAuth'),
+    user_details: [],
   }
 
   componentDidMount() {
     window.scrollTo(0, 0)
     const { handle } = this.props.match.params
-    this.getUser(handle)
+    this.getProfile(handle)
   }
 
-  getUser = handle => {
+  getProfile = handle => {
     axios.get(`/api/user/retrieve/${handle}`)
     .then(res => {
-      if (res.data.length === 0) {
-        this.props.history.push('/404')
-      } else {
-        let data = res.data
-        data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
-        data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
-        this.setState({ user_details: data })
-        axios.get(`/api/tweep/get/${this.state.user_details.user_id}`)
-        .then(res => {
-          console.log(res.data)
-          this.setState({ tweeps: res.data })
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      }
+      let data = res.data
+      data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
+      data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
+      this.setState({ user_details: data })
     })
     .catch(err => {
       console.log(err)
@@ -85,10 +73,11 @@ export default class Profile extends Component {
         <Navbar {...this.props}/>
         <Container>
           <ProfileWrapper><Summary {...this.state}/></ProfileWrapper>
-          <FeedWrapper></FeedWrapper>
+          <FeedWrapper><ProfileFeed {...this.props}/></FeedWrapper>
+          <SuggestionWrapper><Suggestion/></SuggestionWrapper>
         </Container>
       </Body>
     )
-    
+
   }
 }

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
 const Container = styled.div`
@@ -13,18 +14,18 @@ const Image = styled.img`
 `
 
 const ProfileImage = styled.div`
-  padding-top: 10px;
+  padding-top: 15px;
   text-align: center;
 `
 
 const Name = styled.div`
   font-size: 20px;
   font-weight: bold;
-  padding-left: 14px;
+  padding-left: 15px;
 `
 
 const Username = styled.div`
-  padding-left: 12px;
+  padding-left: 15px;
   padding-top: 5px;
 `
 
@@ -33,7 +34,7 @@ const Totals = styled.div`
   width: 290px;
   display: flex;
   flex-direction: row;
-  padding-bottom: 15px;
+  padding-bottom: 18px;
 `
 
 const Tweeps = styled.div`
@@ -60,6 +61,10 @@ const Wrapper = styled.div`
   padding-top: 5px;
 `
 
+const Nav = styled(Link)`
+  color: black;
+`
+
 const Summary = props => {
 
   return (
@@ -69,15 +74,15 @@ const Summary = props => {
       <Username>@{props.user_details.username}</Username>
       <Totals>
         <Tweeps>
-          <span>Tweeps</span>
+          <Nav to={`/user/${props.user_details.username}`}>Tweeps</Nav>
           <Wrapper>{props.user_details.tweeps}</Wrapper>
         </Tweeps>
         <Following>
-          <span>Following</span>
+          <Nav to="/following">Following</Nav>
           <Wrapper>{props.user_details.following}</Wrapper>
         </Following>
         <Followers>
-          <span>Followers</span>
+          <Nav to={`/followers/${props.user_details.username}`}>Followers</Nav>
           <Wrapper>{props.user_details.followers}</Wrapper>
         </Followers>
       </Totals>

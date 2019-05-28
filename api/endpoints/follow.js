@@ -31,8 +31,9 @@ router.post('/', isAuthenticated, (req ,res) => {
     VALUES ($1, $2) returning following_user_id`, followArr
   )
   .then(() => {
-    db.one(`UPDATE users SET following = following + 1 WHERE user_id=$1`, [userId])
-    db.one(`UPDATE users SET follow = followers + 1 WHERE user_id=$1`, [following_userId])
+    db.one(`UPDATE users SET following = following + 1 WHERE user_id=$1 returning user_id`, [userId])
+    db.one(`UPDATE users SET followers = followers + 1 WHERE user_id=$1`, [following_userId])
+    res.send('success')
   })
   .catch(err => {
     console.log(err)

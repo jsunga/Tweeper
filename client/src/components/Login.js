@@ -34,6 +34,7 @@ export default class Login extends Component {
       })
       .then(res => {
         localStorage.setItem('user_id', res.data.user_id)
+        localStorage.setItem('username', res.data.username)
         localStorage.setItem('isAuth', 'true')
         this.props.history.push('/home')
       })
