@@ -28,7 +28,6 @@ export default class ProfileFeed extends Component {
       this.setState({ user_id: res.data.user_id })
       axios.get(`/api/tweep/get/${res.data.user_id}`)
       .then(res => {
-        res.data.reverse()
         this.setState({ tweeps: res.data })
       })
       .catch(err => {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Placeholder } from 'semantic-ui-react'
+import { Placeholder, Message } from 'semantic-ui-react'
 import Navbar from './Navbar'
 import Summary from './Summary'
 import List from './List'
@@ -38,6 +38,7 @@ export default class Followers extends Component {
     user_details: [],
     isLoading: true,
     users: [],
+    noResults: false,
   }
 
   componentDidMount() {
@@ -54,20 +55,24 @@ export default class Followers extends Component {
       this.setState({ user_details: res.data, isLoading: false })
       axios.get(`/api/follow/get_followers/${res.data.user_id}`)
       .then(res => {
-        let temp = []
-        res.data.forEach(item => {
-          axios.get(`/api/user/get/${item.user_id}`)
-          .then(res => {
-            let data = res.data
-            data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
-            data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
-            temp.push(data)
-            this.setState({ users: temp })
+        if (res.data.length === 0) {
+          this.setState({ noResults: true })
+        } else {
+          let temp = []
+          res.data.forEach(item => {
+            axios.get(`/api/user/get/${item.user_id}`)
+            .then(res => {
+              let data = res.data
+              data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
+              data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
+              temp.push(data)
+              this.setState({ users: temp })
+            })
+            .catch(err => {
+              console.log(err)
+            })
           })
-          .catch(err => {
-            console.log(err)
-          })
-        })
+        }
       })
     })
     .catch(err => {
@@ -107,7 +112,13 @@ export default class Followers extends Component {
         <Navbar {...this.props}/>
         <Container>
           <ProfileWrapper>{this.getRender()}</ProfileWrapper>
-          <ListWrapper><List {...this.state}/></ListWrapper>
+          <ListWrapper>
+            {this.state.noResults ? (
+              <Message><Message.Header>No Followers :(</Message.Header></Message>
+            ) : (
+              <List {...this.state}/>
+            )}
+          </ListWrapper>
         </Container>
       </>
     )
