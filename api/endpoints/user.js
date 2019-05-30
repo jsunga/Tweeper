@@ -21,7 +21,7 @@ router.get('/get/:user_id', isAuthenticated, (req, res) => {
   })
   .catch(err => {
     console.log(err)
-    res.sendStatus(400)
+    res.sendStatus(404)
   })
 })
 
@@ -36,7 +36,7 @@ router.get('/retrieve/:user', (req, res) => {
   })
   .catch(err => {
     console.log(err)
-    res.sendStatus(400)
+    res.sendStatus(404)
   })
 })
 

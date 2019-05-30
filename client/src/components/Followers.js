@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Placeholder, Message } from 'semantic-ui-react'
 import Navbar from './Navbar'
 import Summary from './Summary'
+import ErrorComponent from './ErrorComponent'
 import List from './List'
 import styled from 'styled-components'
 import axios from 'axios'
@@ -39,6 +40,7 @@ export default class Followers extends Component {
     isLoading: true,
     users: [],
     noResults: false,
+    error: false,
   }
 
   componentDidMount() {
@@ -68,15 +70,14 @@ export default class Followers extends Component {
               temp.push(data)
               this.setState({ users: temp })
             })
-            .catch(err => {
-              console.log(err)
-            })
           })
         }
       })
     })
     .catch(err => {
-      console.log(err)
+      if (err.response.status === 404) {
+        this.setState({ error: true })
+      }
     })
   }
 
@@ -106,6 +107,16 @@ export default class Followers extends Component {
   }
 
   render() {
+
+    if (this.state.error === true) {
+      return (
+        <>
+          <Navbar {...this.props}/>
+          <ErrorComponent/>
+        </>
+      )
+    }
+
     return (
       <>
         <style>{'body { background-color: #e6ecf0; }'}</style>
@@ -122,5 +133,6 @@ export default class Followers extends Component {
         </Container>
       </>
     )
+    
   }
 }

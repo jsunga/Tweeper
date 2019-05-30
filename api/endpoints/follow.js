@@ -18,7 +18,7 @@ router.get('/get_following/:user_id', isAuthenticated, (req, res) => {
   })
   .catch(error => {
     console.log(error)
-    res.sendStatus(204)
+    res.sendStatus(404)
   })
 })
 
@@ -30,7 +30,7 @@ router.get('/get_followers/:user_id', isAuthenticated, (req, res) => {
   })
   .catch(error => {
     console.log(error)
-    res.sendStatus(204)
+    res.sendStatus(404)
   })
 })
 

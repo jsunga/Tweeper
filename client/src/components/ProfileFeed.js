@@ -22,21 +22,35 @@ export default class ProfileFeed extends Component {
     this.getDetails(handle)
   }
 
-  getDetails = handle => {
-    axios.get(`/api/user/retrieve/${handle}`)
-    .then(res => {
-      this.setState({ user_id: res.data.user_id })
-      axios.get(`/api/tweep/get/${res.data.user_id}`)
-      .then(res => {
-        this.setState({ tweeps: res.data })
+  getDetails = async handle => {
+    try {
+      let user_id = ''
+      let temp = []
+      let user = await axios.get(`/api/user/retrieve/${handle}`)
+      user_id = user.data.user_id
+      let tweeps = await axios.get(`/api/tweep/get/${user_id}`)
+      temp = tweeps.data
+      let retweeps = await axios.get(`/api/retweep/get/${user_id}`)
+      await this.asyncForEach(retweeps.data, async item => {
+        let response = await axios.get(`/api/tweep/retrieve/${item.tweep_id}`)
+        temp.push(response.data)
       })
-      .catch(err => {
-        console.log(err)
+      temp.sort((a, b) => {
+        return a.time_created - b.time_created
       })
-    })
-    .catch(err => {
+      temp.reverse()
+      console.log(temp)
+      this.setState({ tweeps: temp })
+    }
+    catch(err) {
       console.log(err)
-    })
+    }
+  }
+
+  asyncForEach = async (array, callback) => {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
   }
 
   getFollowRender = () => {
@@ -46,12 +60,11 @@ export default class ProfileFeed extends Component {
   }
 
   render() {
-
     return (
       <Container>
         {this.getFollowRender()}
       </Container>
     )
-
   }
+  
 }

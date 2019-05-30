@@ -13,7 +13,7 @@ router.get('/get/:tweep_id', isAuthenticated, (req, res) => {
   })
   .catch(error => {
     console.log(error)
-    res.sendStatus(400)
+    res.sendStatus(404)
   })
 
 })
@@ -28,7 +28,6 @@ router.post('/', isAuthenticated, (req, res) => {
     VALUES ($1, $2, $3) returning content`, replyArr
   )
   .then(data => {
-    res.status(201)
     res.send(data)
   })
   .catch(err => {

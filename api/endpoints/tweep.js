@@ -10,8 +10,23 @@ router.get('/get/:user_id', (req, res) => {
   .then(data => {
     res.send(data)
   })
-  .catch(() => {
-    res.send('no tweeps')
+  .catch(err => {
+    console.log(err)
+    res.sendStatus(404)
+    res.send('haha')
+  })
+})
+
+//get tweep using tweep_id
+router.get(`/retrieve/:tweep_id`, (req, res) => {
+  const tweepId = req.params.tweep_id
+  db.one(`SELECT * FROM tweeps WHERE tweep_id=$1`, [tweepId])
+  .then(data => {
+    res.send(data)
+  })
+  .catch(err => {
+    console.log(err)
+    res.sendStatus(404)
   })
 })
 

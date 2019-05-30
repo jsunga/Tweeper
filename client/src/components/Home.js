@@ -96,11 +96,9 @@ export default class Home extends Component {
   }
 
   render() {
-
     if (this.state.isAuth !== 'true') {
       return <Redirect to="/"/>
     }
-
     return (
       <Body>
         <Navbar {...this.props}/>
@@ -111,6 +109,6 @@ export default class Home extends Component {
         </Container>
       </Body>
     )
-
   }
+  
 }

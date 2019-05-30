@@ -69,7 +69,7 @@ export default class Home extends Component {
       this.setState({ user_details: data, isLoading: false })
     })
     .catch(err => {
-      if (err.response.status === 400) {
+      if (err.response.status === 404) {
         this.setState({ error: true })
       }
     })
