@@ -27,8 +27,9 @@ router.post('/', isAuthenticated, (req, res) => {
   db.one(`INSERT INTO replies (replier_user_id, tweep_id, content)
     VALUES ($1, $2, $3) returning content`, replyArr
   )
-  .then(data => {
-    res.send(data)
+  .then(() => {
+    db.one(`UPDATE tweeps SET total_replies = total_replies + 1 WHERE tweepd_id=$1`, [tweepId])
+    res.send('success')
   })
   .catch(err => {
     console.log(err)

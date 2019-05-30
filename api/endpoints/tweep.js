@@ -13,7 +13,6 @@ router.get('/get/:user_id', (req, res) => {
   .catch(err => {
     console.log(err)
     res.sendStatus(404)
-    res.send('haha')
   })
 })
 

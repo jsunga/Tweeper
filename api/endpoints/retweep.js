@@ -27,6 +27,7 @@ router.post('/', isAuthenticated, (req, res) => {
   )
   .then(() => {
     db.one(`UPDATE users SET tweeps = tweeps + 1 WHERE user_id=$1`, [userId])
+    db.one(`UPDATE tweeps SET total_retweeps = total_retweeps + 1 WHERE tweep_id=$1`, [tweepId])
     res.send('success')
   })
   .catch(err => {

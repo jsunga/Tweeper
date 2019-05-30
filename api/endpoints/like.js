@@ -26,8 +26,9 @@ router.post('/', isAuthenticated, (req, res) => {
   db.one(`INSERT INTO likes (liker_user_id, tweep_id)
     VALUES ($1, $2) returning liker_user_id`, likeArr
   )
-  .then(data => {
-    res.send(data)
+  .then(() => {
+    db.one(`UPDATE tweeps SET total_likes = total_likes + 1 WHERE tweep_id=$1`, [tweepId])
+    res.send('success')
   })
   .catch(err => {
     console.log(err)

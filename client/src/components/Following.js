@@ -107,7 +107,6 @@ export default class Following extends Component {
   }
 
   render() {
-
     if (this.state.error === true) {
       return (
         <>
@@ -116,7 +115,6 @@ export default class Following extends Component {
         </>
       )
     }
-
     return (
       <>
         <style>{'body { background-color: #e6ecf0; }'}</style>
@@ -133,6 +131,6 @@ export default class Following extends Component {
         </Container>
       </>
     )
-
   }
+  
 }
