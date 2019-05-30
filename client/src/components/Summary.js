@@ -74,15 +74,15 @@ const Summary = props => {
       <Username>@{props.user_details.username}</Username>
       <Totals>
         <Tweeps>
-          <Nav to={`/user/${props.user_details.username}`}>Tweeps</Nav>
+          <Nav to={`/${props.user_details.username}`}>Tweeps</Nav>
           <Wrapper>{props.user_details.tweeps}</Wrapper>
         </Tweeps>
         <Following>
-          <Nav to={`/user/${props.user_details.username}/following`}>Following</Nav>
+          <Nav to={`/${props.user_details.username}/following`}>Following</Nav>
           <Wrapper>{props.user_details.following}</Wrapper>
         </Following>
         <Followers>
-          <Nav to={`/user/${props.user_details.username}/followers`}>Followers</Nav>
+          <Nav to={`/${props.user_details.username}/followers`}>Followers</Nav>
           <Wrapper>{props.user_details.followers}</Wrapper>
         </Followers>
       </Totals>

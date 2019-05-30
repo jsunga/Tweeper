@@ -52,7 +52,6 @@ export default class Register extends Component {
   }
 
   render() {
-
     return (
       <Container>
         <Form onSubmit={this.register}>
@@ -80,6 +79,6 @@ export default class Register extends Component {
         </Message>
       </Container>
     )
-    
   }
+  
 }

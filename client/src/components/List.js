@@ -33,7 +33,7 @@ const List = props => {
   return (
     <>
       {props.users.map(item => (
-        <Link to={`/user/${item.username}`} key={item.user_id}>
+        <Link to={`/${item.username}`} key={item.user_id}>
         <Card>
           <Image src={item.image_url} alt="thumbnail"/>
           <div>

@@ -70,11 +70,30 @@ export default class ProfileFeed extends Component {
     tweeps: [],
     noResults: false,
     isLoading: true,
+    isFollowing: false,
   }
 
   componentDidMount() {
     const { handle } =  this.props.match.params
     this.getDetails(handle)
+    this.getFollowing(handle)
+  }
+
+  getFollowing = handle => {
+    axios.get(`/api/follow/get_following/${this.state.local_user_id}`)
+    .then(res => {
+      res.data.forEach(item => {
+        axios.get(`/api/user/get/${item.following_user_id}`)
+        .then(res => {
+          if (handle === res.data.username) {
+            this.setState({ isFollowing: true })
+          }
+        })
+      })
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   getDetails = async handle => {
@@ -115,7 +134,7 @@ export default class ProfileFeed extends Component {
     }
     catch(err) {
       if (err.response.status === 404) {
-        this.setState({ noResults: true })
+        this.setState({ noResults: true, isLoading: false })
       }
     }
   }
@@ -127,18 +146,39 @@ export default class ProfileFeed extends Component {
   }
 
   getFollowRender = () => {
-    if (this.state.local_user !== this.props.match.params.handle) {
-      return <Button color='twitter' fluid>Follow</Button>
+    console.log(this.state.following)
+    console.log(this.props.match.params.handle)
+    this.state.following.forEach(item => {
+      if (item === this.props.match.params.handle) {
+        return <Button color='twitter' fluid>Follow</Button>
+      }
+    })
+  }
+
+  getFollowButton = () => {
+    if (this.props.match.params.handle === this.state.local_user) {
+      return null
+    }
+    if (this.state.isFollowing === true) {
+      return (
+        <Button animated='vertical' style={{marginBottom: '5px'}} color='twitter' fluid>
+          <Button.Content hidden>Unfollow</Button.Content>
+          <Button.Content visible>Following</Button.Content>
+        </Button>
+      )
+    }
+    if (this.state.isFollowing === false) {
+      return <Button style={{marginBottom: '5px'}} color='twitter' fluid>Follow</Button>
     }
   }
 
   render() {
     if (this.state.isLoading === true) {
-      return <Loader style={{marginTop: '75px'}}active inline='centered' />
+      return <Loader style={{marginTop: '75px'}} active inline='centered' />
     }
     return (
       <Container>
-        {this.getFollowRender()}
+        {this.getFollowButton()}
         {this.state.noResults ? (
           <Message><Message.Header>No Tweeps :(</Message.Header></Message>
         ) : (

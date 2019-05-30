@@ -91,7 +91,7 @@ export default class Navbar extends Component {
           <Left>
             <Link><Nav to="/home"><Icon name='home'/>Home</Nav></Link>
             <Link><Nav to="/messages"><Icon name='envelope outline'/>Messages</Nav></Link>
-            <Link><Nav to={`/user/${this.state.username}`}><Icon name='address card outline'/>Profile</Nav></Link>
+            <Link><Nav to={`/${this.state.username}`}><Icon name='address card outline'/>Profile</Nav></Link>
           </Left>
           <Right>
             <Logout size='mini' onClick={this.logout}>Logout</Logout>

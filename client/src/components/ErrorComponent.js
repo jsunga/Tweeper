@@ -18,14 +18,12 @@ const Body = styled.h1`
 `
 
 const ErrorComponent = () => {
-
   return (
     <Container>
       <Header>404</Header>
       <Body>Oops! This page does not exist..</Body>
     </Container>
   )
-
 }
 
 export default ErrorComponent

@@ -12,13 +12,13 @@ const Routes = () => (
     <Switch>
       <Route exact path="/" component={Main}/>
       <Route exact path="/home" component={Home}/>
-      <Route exact path="/user/:handle" render={props => (
+      <Route exact path="/:handle" render={props => (
         <Profile key={props.location.pathname} {...props} />)} 
       />
-      <Route exact path="/user/:handle/following" render={props => (
+      <Route exact path="/:handle/following" render={props => (
         <Following key={props.location.pathname} {...props} />)} 
       />
-      <Route exact path="/user/:handle/followers" render={props => (
+      <Route exact path="/:handle/followers" render={props => (
         <Followers key={props.location.pathname} {...props} />)} 
       />
       <Route exact path="/404" component={ErrorComponent} />
