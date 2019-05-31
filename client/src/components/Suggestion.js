@@ -13,14 +13,11 @@ const Header = styled.h2`
 `
 
 export default class Suggestion extends Component {
-
   render() {
-
     return (
       <Container>
         <Header>Who to follow</Header>
       </Container>
     )
-    
   }
 }

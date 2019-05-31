@@ -95,17 +95,17 @@ export default class Home extends Component {
       )
     } else {
       return (
-        <Summary {...this.state}/>
+        <>
+          <Summary {...this.state}/>
+        </>
       )
     }
   }
 
   render() {
-
     if (this.state.isAuth !== 'true') {
       return <Redirect to="/"/>
     }
-
     if (this.state.error === true) {
       return (
         <>
@@ -114,17 +114,18 @@ export default class Home extends Component {
         </>
       )
     }
-
     return (
       <Body>
         <Navbar {...this.props}/>
         <Container>
-          <ProfileWrapper>{this.getRender()}</ProfileWrapper>
+          <ProfileWrapper>
+            {this.getRender()}
+          </ProfileWrapper>
           <FeedWrapper><ProfileFeed {...this.props}/></FeedWrapper>
           <SuggestionWrapper><Suggestion/></SuggestionWrapper>
         </Container>
       </Body>
     )
-
   }
+
 }

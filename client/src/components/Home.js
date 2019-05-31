@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Placeholder } from 'semantic-ui-react'
+import { Placeholder, Button } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 import Navbar from './Navbar'
 import Summary from './Summary'
@@ -90,7 +90,10 @@ export default class Home extends Component {
       )
     } else {
       return (
-        <Summary {...this.state}/>
+        <>
+          <Summary {...this.state}/>
+          <Button style={{width: '295px'}}>Edit Profile</Button>
+        </>
       )
     }
   }

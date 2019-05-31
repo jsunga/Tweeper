@@ -53,4 +53,20 @@ router.post('/', isAuthenticated, (req ,res) => {
   })
 })
 
+//unfollow a user
+router.delete(`/delete/:following_user_id`, isAuthenticated, async (req, res) => {
+  const userId = req.user.user_id
+  const following_userId = req.params.following_user_id
+  try {
+    await db.none(`delete from following where user_id=$1 and following_user_id=$2`, [userId, following_userId])
+    await db.none(`update users set following = following - 1 where user_id=$1`, [userId])
+    await db.none(`update users set followers = followers - 1 where user_id=$1`, [following_userId])
+    res.send('success')
+  }
+  catch(err) {
+    console.log(err)
+    res.sendStatus(400)
+  }
+})
+
 module.exports = router

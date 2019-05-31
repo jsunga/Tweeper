@@ -60,6 +60,14 @@ const Title = styled.div`
   border-bottom: 1px solid #d6d6d6;
 `
 
+const StyledButton = styled.button`
+  border: none;
+  background-color: white;
+  :hover {
+    cursor: pointer
+  }
+`
+
 export default class ProfileFeed extends Component {
 
   state = {
@@ -75,8 +83,8 @@ export default class ProfileFeed extends Component {
 
   componentDidMount() {
     const { handle } =  this.props.match.params
-    this.getDetails(handle)
     this.getFollowing(handle)
+    this.getDetails(handle)
   }
 
   getFollowing = handle => {
@@ -155,20 +163,80 @@ export default class ProfileFeed extends Component {
     })
   }
 
+  unfollow = () => {
+    axios.delete(`/api/follow/delete/${this.state.local_details.user_id}`)
+    .then(() => {
+      this.setState({ isFollowing: false })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+  follow = () => {
+    axios.post(`/api/follow`, {
+      following_userId: this.state.local_details.user_id
+    })
+    .then(() => {
+      this.setState({ isFollowing: true })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+  like = value => {
+    axios.post(`/api/like`, {
+      tweepId: value
+    })
+    .then(() => {
+      this.getDetails(this.props.match.params.handle)
+    })
+    .catch(err => {
+      if (err.response.status === 400) {
+        axios.delete(`/api/like/unlike/${value}`)
+        .then(() => {
+          this.getDetails(this.props.match.params.handle)
+        })
+      }
+      console.log(err.response.status)
+    })
+  }
+
+  retweep = value => {
+    axios.post(`/api/retweep`, {
+      tweepId: value
+    })
+    .then(() => {
+      this.getDetails(this.props.match.params.handle)
+    })
+    .catch(err => {
+      if (err.response.status === 400) {
+        axios.delete(`/api/retweep/undo/${value}`)
+        .then(() => {
+          this.getDetails(this.props.match.params.handle)
+        })
+        .catch(err => {
+          console.log(err.response.status)
+        }) 
+      }
+    })
+  }
+
   getFollowButton = () => {
     if (this.props.match.params.handle === this.state.local_user) {
       return null
     }
     if (this.state.isFollowing === true) {
       return (
-        <Button animated='vertical' style={{marginBottom: '5px'}} color='twitter' fluid>
+        <Button animated='vertical' style={{marginBottom: '5px'}} color='twitter' fluid onClick={this.unfollow}> 
           <Button.Content hidden>Unfollow</Button.Content>
           <Button.Content visible>Following</Button.Content>
         </Button>
       )
     }
     if (this.state.isFollowing === false) {
-      return <Button style={{marginBottom: '5px'}} color='twitter' fluid>Follow</Button>
+      return <Button style={{marginBottom: '5px'}} color='twitter' fluid onClick={this.follow}>Follow</Button>
     }
   }
 
@@ -196,9 +264,9 @@ export default class ProfileFeed extends Component {
                   <Username>@{item.username} {item.date_created}</Username>
                   <div>{item.content}</div>
                   <Totals>
-                    <Bottom><Icon name='reply' size='large'/>{item.total_replies}</Bottom>
-                    <Bottom><Icon name='retweet' size='large'/> {item.total_retweeps}</Bottom>
-                    <Bottom><Icon name='like' size='large'/> {item.total_likes}</Bottom>
+                    <Bottom><StyledButton><Icon name='reply' color='blue' size='large'/>{item.total_replies}</StyledButton></Bottom>
+                    <Bottom><StyledButton onClick={() => {this.retweep(item.tweep_id)}}><Icon name='retweet' color='green' size='large'/> {item.total_retweeps}</StyledButton></Bottom>
+                    <Bottom><StyledButton onClick={() => {this.like(item.tweep_id)}}><Icon name='like' color='red' size='large'/> {item.total_likes}</StyledButton></Bottom>
                   </Totals>
                 </Body>
               </Wrapper>

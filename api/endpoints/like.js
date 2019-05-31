@@ -36,4 +36,19 @@ router.post('/', isAuthenticated, (req, res) => {
   })
 })
 
+//unlike a tweep
+router.delete('/unlike/:tweep_id', isAuthenticated, async (req, res) => {
+  const userId = req.user.user_id
+  const tweepId = req.params.tweep_id
+  try {
+    await db.none(`delete from likes where liker_user_id=$1 and tweep_id=$2`, [userId, tweepId])
+    await db.none(`update tweeps set total_likes = total_likes - 1 where tweep_id=$1`, [tweepId])
+    res.send('success')
+  }
+  catch(err) {
+    console.log(err)
+    res.sendStatus(400)
+  }
+})
+
 module.exports = router

@@ -36,4 +36,19 @@ router.post('/', isAuthenticated, (req, res) => {
   })
 })
 
+//undo retweep
+router.delete(`/undo/:tweep_id`, isAuthenticated, async (req, res) => {
+  const userId = req.user.user_id
+  const tweepId = req.params.tweep_id
+  try {
+    await db.none(`delete from retweeps where tweep_id=$1 and user_id=$2`, [tweepId, userId])
+    await db.none(`update tweeps set total_retweeps = total_retweeps - 1 where tweep_id=$1`, [tweepId])
+    res.send('success')
+  }
+  catch(err) {
+    console.log(err)
+    res.sendStatus(400)
+  }
+})
+
 module.exports = router
