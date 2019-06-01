@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Button, Message, Icon, Loader } from 'semantic-ui-react'
+import { Button, Message, Icon, Loader, Modal } from 'semantic-ui-react'
+import Reply from './Reply'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -68,23 +69,126 @@ const StyledButton = styled.button`
   }
 `
 
+const ModalHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+`
+
+const ModalImage = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+`
+
+const ModalDetails = styled.div`
+  padding-left: 10px;
+`
+
+const ModalName = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+`
+
+const ModalUser = styled.div`
+  color: grey;
+`
+
+const Content = styled.div`
+  padding-top: 5px;
+  font-size: 30px;
+`
+
+const TextArea = styled.textarea`
+  width: 100%;
+  height: 60px;
+  resize: none;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  margin-top: 15px;
+  margin-bottom: 5px;
+`
+
+const Replies = styled.div`
+  border-top: 1px solid #d6d6d6;
+  padding-top: 10px;
+  padding-bottom: 10px;
+`
+
+const ReplyHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+`
+
+const ReplyImage = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+`
+
+const ReplyName = styled.div`
+  color: grey;
+`
+
+const Created = styled.div`
+  padding-top: 5px;
+  color: grey
+`
+
+const ReplyWrapper = styled.div`
+  padding-left: 7px;
+`
+
+const ReplyContent = styled.div`
+  padding-top: 7px;
+  font-size: 20px;
+`
+
 export default class ProfileFeed extends Component {
 
   state = {
-    local_user: localStorage.getItem('username'),
+    local_Details: localStorage.getItem('username'),
     local_user_id: localStorage.getItem('user_id'),
     local_details: [],
     user_id: '',
     tweeps: [],
+    tweep_id: '',
+    replies: [],
+    tweep: [],
+    tweeper: [],
+    message: '',
     noResults: false,
     isLoading: true,
     isFollowing: false,
+    modalOpen: false,
+    modalLoading: true,
+  }
+
+  handleOpen = async value => {
+    this.props.history.push(`/${this.props.match.params.handle}/status/${value}`)
+    this.setState({ modalOpen: true })
+    let tweep = await axios.get(`/api/tweep/retrieve/${value}`)
+    tweep.data.date_created = new Date(tweep.data.date_created).toDateString()
+    let tweeper_user = await axios.get(`/api/user/get/${tweep.data.user_id}`)
+    let data = tweeper_user.data
+    data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
+    data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
+    this.setState({ tweep: tweep.data, tweeper: data })
+    let users = await axios.get(`/api/reply/get/${value}`)
+    await this.asyncForEach(users.data, async item => {
+      let details = await axios.get(`/api/user/get/${item.replier_user_id}`)
+      item.image_url = details.data.image_url
+      item.username = details.data.username
+      item.date_created = new Date(item.date_created).toDateString()
+    })
+    console.log(users.data)
+    this.setState({ replies: users.data })
   }
 
   componentDidMount() {
-    const { handle } =  this.props.match.params
-    this.getFollowing(handle)
-    this.getDetails(handle)
+    this.getFollowing(this.props.match.params.handle)
+    this.getDetails(this.props.match.params.handle)
   }
 
   getFollowing = handle => {
@@ -223,6 +327,21 @@ export default class ProfileFeed extends Component {
     })
   }
 
+  reply = () => {
+    if (this.state.message.length === 0) {
+      alert('No empty reply')
+    } else {
+      axios.post(`/api/reply`, {
+        tweepId: this.state.tweep.tweep_id,
+        content: this.state.message
+      })
+      .then(() => this.setState({ message: '' }))
+      .catch(err => {
+        console.log(err)
+      })
+    }
+  }
+
   getFollowButton = () => {
     if (this.props.match.params.handle === this.state.local_user) {
       return null
@@ -241,30 +360,31 @@ export default class ProfileFeed extends Component {
   }
 
   render() {
-    if (this.state.isLoading === true) {
+    const { isLoading, noResults, tweeps, modalOpen, tweep, tweeper, message, replies } = this.state
+    if (isLoading === true) {
       return <Loader style={{marginTop: '75px'}} active inline='centered' />
     }
     return (
       <Container>
         {this.getFollowButton()}
-        {this.state.noResults ? (
+        {noResults ? (
           <Message><Message.Header>No Tweeps :(</Message.Header></Message>
         ) : (
           <>
             <Title>Tweeps</Title>
-            {this.state.tweeps.map(item => (
+            {tweeps.map(item => (
               <Wrapper key={item.tweep_id}>
                 <ImageWrapper><Image src={item.image_url} alt="pic"/></ImageWrapper>
                 <Body>
                   {item.username === this.props.match.params.handle ? (
                     null
                   ) : (
-                    <Re>You Retweeped</Re>
+                    <Re>{this.props.match.params.handle} Retweeped</Re>
                   )}
                   <Username>@{item.username} {item.date_created}</Username>
                   <div>{item.content}</div>
                   <Totals>
-                    <Bottom><StyledButton><Icon name='reply' color='blue' size='large'/>{item.total_replies}</StyledButton></Bottom>
+                    <Bottom><StyledButton onClick={() => {this.handleOpen(item.tweep_id)}}><Icon name='reply' color='blue' size='large'/>{item.total_replies}</StyledButton></Bottom>
                     <Bottom><StyledButton onClick={() => {this.retweep(item.tweep_id)}}><Icon name='retweet' color='green' size='large'/> {item.total_retweeps}</StyledButton></Bottom>
                     <Bottom><StyledButton onClick={() => {this.like(item.tweep_id)}}><Icon name='like' color='red' size='large'/> {item.total_likes}</StyledButton></Bottom>
                   </Totals>
@@ -273,6 +393,43 @@ export default class ProfileFeed extends Component {
             ))}
           </>
         )}
+        <Modal 
+          open={modalOpen}
+          onClose={() => {
+            this.props.history.push(`/${this.props.match.params.handle}`)
+            this.setState({ modalOpen: false, tweeper: [], tweep: [], replies: [] })
+          }}
+          centered={false} 
+          size='small'
+          dimmer={true}
+        >
+          <Modal.Content>
+            <ModalHeader>
+              <ModalImage src={tweeper.image_url} alt="pic"/>
+              <ModalDetails>
+                <ModalName>{tweeper.firstname} {tweeper.lastname}</ModalName>
+                <ModalUser>@{tweeper.username}</ModalUser>
+              </ModalDetails>
+            </ModalHeader>
+            <Content>{tweep.content}</Content>
+            <Created>{tweep.date_created}</Created>
+            <TextArea placeholder="Tweep your reply" value={message} onChange={e => {this.setState({ message: e.target.value })}}/>
+            <Button style={{marginBottom: '5px'}} onClick={this.reply} color='twitter' fluid>Reply</Button>
+            {replies.map(item => (
+              <Replies key={item.content}>
+                <ReplyHeader>
+                  <ReplyImage src={item.image_url} alt="pic" />
+                  <ReplyWrapper>
+                    <ReplyName>@{item.username}</ReplyName>
+                    <ReplyContent>{item.content}</ReplyContent>
+                    <Created>{item.date_created}</Created>
+                  </ReplyWrapper>
+                </ReplyHeader>
+              </Replies>
+            ))}
+          </Modal.Content>
+        </Modal>
+        <Reply {...this.props}/>
       </Container>
     )
   }
