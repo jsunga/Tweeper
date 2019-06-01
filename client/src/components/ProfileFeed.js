@@ -150,8 +150,7 @@ export default class ProfileFeed extends Component {
   state = {
     local_user: localStorage.getItem('username'),
     local_user_id: localStorage.getItem('user_id'),
-    local_details: [],
-    user_id: '',
+    profile_details: [],
     tweeps: [],
     tweep_id: '',
     replies: [],
@@ -216,7 +215,7 @@ export default class ProfileFeed extends Component {
       let user_id = ''
       let temp = []
       let user = await axios.get(`/api/user/retrieve/${handle}`)
-      this.setState({ local_details: user.data })
+      this.setState({ profile_details: user.data })
       user_id = user.data.user_id
       let tweeps = await axios.get(`/api/tweep/get/${user_id}`)
       await this.asyncForEach(tweeps.data, async item => {
@@ -271,7 +270,7 @@ export default class ProfileFeed extends Component {
   }
 
   unfollow = () => {
-    axios.delete(`/api/follow/delete/${this.state.local_details.user_id}`)
+    axios.delete(`/api/follow/delete/${this.state.profile_details.user_id}`)
     .then(() => {
       this.setState({ isFollowing: false })
     })
@@ -282,7 +281,7 @@ export default class ProfileFeed extends Component {
 
   follow = () => {
     axios.post(`/api/follow`, {
-      following_userId: this.state.local_details.user_id
+      following_userId: this.state.profile_details.user_id
     })
     .then(() => {
       this.setState({ isFollowing: true })
@@ -402,13 +401,12 @@ export default class ProfileFeed extends Component {
         <Modal 
           open={modalOpen}
           onClose={() => {
-            this.props.history.push(`/${this.state.local_details.username}`)
+            this.props.history.push(`/${this.state.profile_details.username}`)
             this.setState({ modalOpen: false, tweeper: [], tweep: [], replies: [] })
-            this.getDetails(this.state.local_details.username)
+            this.getDetails(this.state.profile_details.username)
           }}
           centered={false} 
           size='small'
-          dimmer={true}
         >
           <Modal.Content>
             <ModalHeader>
@@ -436,7 +434,7 @@ export default class ProfileFeed extends Component {
             ))}
           </Modal.Content>
         </Modal>
-        <Reply {...this.props}/>
+        <Reply {...this.props} {...this.state} getReplies={this.getReplies}/>
       </Container>
     )
   }
