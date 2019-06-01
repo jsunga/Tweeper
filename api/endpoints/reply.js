@@ -28,7 +28,7 @@ router.post('/', isAuthenticated, (req, res) => {
     VALUES ($1, $2, $3) returning content`, replyArr
   )
   .then(() => {
-    db.one(`UPDATE tweeps SET total_replies = total_replies + 1 WHERE tweepd_id=$1`, [tweepId])
+    db.one(`UPDATE tweeps SET total_replies = total_replies + 1 WHERE tweep_id=$1`, [tweepId])
     res.send('success')
   })
   .catch(err => {

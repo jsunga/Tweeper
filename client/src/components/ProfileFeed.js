@@ -148,7 +148,7 @@ const ReplyContent = styled.div`
 export default class ProfileFeed extends Component {
 
   state = {
-    local_Details: localStorage.getItem('username'),
+    local_user: localStorage.getItem('username'),
     local_user_id: localStorage.getItem('user_id'),
     local_details: [],
     user_id: '',
@@ -165,12 +165,21 @@ export default class ProfileFeed extends Component {
     modalLoading: true,
   }
 
+  componentDidMount() {
+    this.getFollowing(this.props.match.params.handle)
+    this.getDetails(this.props.match.params.handle)
+  }
+
   handleOpen = async value => {
-    this.props.history.push(`/${this.props.match.params.handle}/status/${value}`)
+    this.getReplies(value)
+  }
+
+  getReplies = async value => {
     this.setState({ modalOpen: true })
     let tweep = await axios.get(`/api/tweep/retrieve/${value}`)
     tweep.data.date_created = new Date(tweep.data.date_created).toDateString()
     let tweeper_user = await axios.get(`/api/user/get/${tweep.data.user_id}`)
+    this.props.history.push(`/${tweeper_user.data.username}/status/${value}`)
     let data = tweeper_user.data
     data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
     data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
@@ -182,13 +191,7 @@ export default class ProfileFeed extends Component {
       item.username = details.data.username
       item.date_created = new Date(item.date_created).toDateString()
     })
-    console.log(users.data)
     this.setState({ replies: users.data })
-  }
-
-  componentDidMount() {
-    this.getFollowing(this.props.match.params.handle)
-    this.getDetails(this.props.match.params.handle)
   }
 
   getFollowing = handle => {
@@ -335,7 +338,10 @@ export default class ProfileFeed extends Component {
         tweepId: this.state.tweep.tweep_id,
         content: this.state.message
       })
-      .then(() => this.setState({ message: '' }))
+      .then(() => {
+        this.setState({ message: '' })
+        this.getReplies(this.state.tweep.tweep_id)
+      })
       .catch(err => {
         console.log(err)
       })
@@ -396,8 +402,9 @@ export default class ProfileFeed extends Component {
         <Modal 
           open={modalOpen}
           onClose={() => {
-            this.props.history.push(`/${this.props.match.params.handle}`)
+            this.props.history.push(`/${this.state.local_details.username}`)
             this.setState({ modalOpen: false, tweeper: [], tweep: [], replies: [] })
+            this.getDetails(this.state.local_details.username)
           }}
           centered={false} 
           size='small'
