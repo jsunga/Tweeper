@@ -13,7 +13,7 @@ router.get('/get/:user_id', (req ,res) => {
   })
   .catch(err => {
     console.log(err)
-    res.sendStatus(404)
+    res.send('no retweeps')
   })
 })
 
@@ -43,6 +43,7 @@ router.delete(`/undo/:tweep_id`, isAuthenticated, async (req, res) => {
   try {
     await db.none(`delete from retweeps where tweep_id=$1 and user_id=$2`, [tweepId, userId])
     await db.none(`update tweeps set total_retweeps = total_retweeps - 1 where tweep_id=$1`, [tweepId])
+    await db.none(`update users set tweeps = tweeps - 1 where user_id=$1`, [userId])
     res.send('success')
   }
   catch(err) {

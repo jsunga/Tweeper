@@ -32,11 +32,6 @@ const SuggestionWrapper = styled.div`
   margin-top: 15px;
 `
 
-const Body = styled.div`
-  background-color: #e6ecf0;
-  height: 100vh;
-`
-
 const PlaceholderWrapper = styled.div`
   background-color: white;
   margin-right: 10px;
@@ -115,7 +110,8 @@ export default class Home extends Component {
       )
     }
     return (
-      <Body>
+      <>
+        <style>{'body { background-color: #e6ecf0; }'}</style>
         <Navbar {...this.props}/>
         <Container>
           <ProfileWrapper>
@@ -124,7 +120,7 @@ export default class Home extends Component {
           <FeedWrapper><ProfileFeed {...this.props}/></FeedWrapper>
           <SuggestionWrapper><Suggestion/></SuggestionWrapper>
         </Container>
-      </Body>
+      </>
     )
   }
 

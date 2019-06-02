@@ -228,14 +228,13 @@ export default class ProfileFeed extends Component {
         await this.asyncForEach(retweeps.data, async item => {
           let response = await axios.get(`/api/tweep/retrieve/${item.tweep_id}`)
           let details = await axios.get(`/api/user/get/${response.data.user_id}`)
+          response.data.date_created = item.date_created
           response.data.username = details.data.username
           response.data.image_url = details.data.image_url
           temp.push(response.data)
         })
       }
-      catch(err) {
-        console.log(err)
-      }
+      catch(err) { }
       temp.sort((a, b) => {
         a = new Date(a.date_created);
         b = new Date(b.date_created);
