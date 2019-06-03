@@ -7,7 +7,7 @@ const Container = styled.div`
   height: 205px;
 `
 
-const Header = styled.h2`
+const Header = styled.h3`
   padding-top: 10px;
   padding-left: 15px;
 `

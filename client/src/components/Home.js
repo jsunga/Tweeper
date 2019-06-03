@@ -103,7 +103,7 @@ export default class Home extends Component {
         <Navbar {...this.props}/>
         <Container>
           <ProfileWrapper>{this.getRender()}</ProfileWrapper>
-          <FeedWrapper><Feed/></FeedWrapper>
+          <FeedWrapper><Feed {...this.props}/></FeedWrapper>
           <SuggestionWrapper><Suggestion/></SuggestionWrapper>
         </Container>
       </>

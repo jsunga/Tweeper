@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Button, Search, Icon } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
+import _ from 'lodash'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -59,14 +60,36 @@ const searchStyle = {
   marginTop: '6px',
 }
 
+const initialState = {
+  user_id: localStorage.getItem('user_id'),
+  username: '',
+  isLoading: false,
+  results: [],
+  value: '',
+  users: [],
+}
+
 export default class Navbar extends Component {
 
-  state = {
-    user_id: localStorage.getItem('user_id'),
-    username: '',
-  }
+  state = initialState
 
   componentDidMount() {
+    this.getUser()
+    this.getAllUsers()
+  }
+
+  getAllUsers = () => {
+    axios.get(`/api/user/all`)
+    .then(res => {
+      console.log(res.data)
+      this.setState({ users: res.data })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+  getUser = () => {
     axios.get(`/api/user/get/${this.state.user_id}`)
     .then(res => {
       this.setState({ username: res.data.username })
@@ -84,27 +107,23 @@ export default class Navbar extends Component {
   }
 
   render() {
-
     return (
       <Container>
         <Wrapper>
           <Left>
             <Link><Nav to="/home"><Icon name='home'/>Home</Nav></Link>
             <Link><Nav to="/messages"><Icon name='envelope outline'/>Messages</Nav></Link>
-            <Link><Nav to={{
-              pathname: `/${this.state.username}`,
-              state: {
-                profile: true
-              }
-            }}><Icon name='address card outline'/>Profile</Nav></Link>
+            <Link><Nav to={`/${this.state.username}`}><Icon name='address card outline'/>Profile</Nav></Link>
           </Left>
           <Right>
             <Logout size='mini' onClick={this.logout}>Logout</Logout>
-            <Search style={searchStyle}/>
+            <Search 
+              style={searchStyle}
+            />
           </Right>
         </Wrapper>
       </Container>
     )
-    
   }
+  
 }

@@ -161,7 +161,6 @@ export default class ProfileFeed extends Component {
     isLoading: true,
     isFollowing: false,
     modalOpen: false,
-    modalLoading: true,
   }
 
   componentDidMount() {
