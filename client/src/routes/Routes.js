@@ -18,7 +18,9 @@ const Routes = () => (
       <Route path="/:handle/followers" render={props => (
         <Followers key={props.location.pathname} {...props} />)} 
       />
-      <Route path="/:handle" component={Profile}/>
+      <Route path="/:handle" render={props => (
+        <Profile key={props.location.pathname} {...props} />)} 
+      />
       <Route exact path="/404" component={ErrorComponent} />
       <Route component={ErrorComponent} />
     </Switch>

@@ -167,7 +167,6 @@ export default class Feed extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
     this.getTweeps()
   }
 

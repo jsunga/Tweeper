@@ -40,6 +40,17 @@ router.get('/retrieve/:user', (req, res) => {
   })
 })
 
+//get all users
+router.get('/all', isAuthenticated, async (req, res) => {
+  try {
+    let users = await db.many(`select * from users`)
+    res.send(users)
+  }
+  catch(err) {
+    console.log(err)
+  }
+})
+
 //register
 router.post('/register', (req, res, next) => {
   const { username, firstname, lastname, password } = req.body

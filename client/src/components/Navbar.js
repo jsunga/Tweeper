@@ -60,33 +60,37 @@ const searchStyle = {
   marginTop: '6px',
 }
 
-const initialState = {
-  user_id: localStorage.getItem('user_id'),
-  username: '',
-  isLoading: false,
-  results: [],
-  value: '',
-  users: [],
-}
-
 export default class Navbar extends Component {
 
-  state = initialState
+  state = {
+    user_id: localStorage.getItem('user_id'),
+    username: '',
+    isLoading: false,
+    results: [],
+    value: '',
+    users: [],
+  }
 
   componentDidMount() {
     this.getUser()
     this.getAllUsers()
   }
 
-  getAllUsers = () => {
-    axios.get(`/api/user/all`)
-    .then(res => {
-      console.log(res.data)
+  getAllUsers = async () => {
+    try {
+      let res = await axios.get(`/api/user/all`)
+      await this.asyncForEach(res.data, async item => {
+        item.title = item.username
+      })
       this.setState({ users: res.data })
-    })
-    .catch(err => {
-      console.log(err)
-    })
+    }
+    catch(err) { }
+  }
+
+  asyncForEach = async (array, callback) => {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
   }
 
   getUser = () => {
@@ -106,7 +110,32 @@ export default class Navbar extends Component {
     this.props.history.push('/')
   }
 
+  handleResultSelect = (e, { result }) => {
+    this.props.history.push(`/${result.title}`)
+    this.setState({ value: result.title })
+  }
+
+  handleSearchChange = (e, { value }) => {
+    this.setState({ isLoading: true, value })
+
+    setTimeout(() => {
+      const re = new RegExp(_.escapeRegExp(this.state.value), 'i')
+      const isMatch = result => re.test(result.title)
+
+      this.setState({
+        isLoading: false,
+        results: _.filter(this.state.users, isMatch),
+      })
+    }, 300)
+  }
+
+  search = e => {
+    e.preventDefault()
+    this.props.history.push(`/${this.state.value}`)
+  }
+
   render() {
+    const { isLoading, value, results } = this.state
     return (
       <Container>
         <Wrapper>
@@ -117,9 +146,18 @@ export default class Navbar extends Component {
           </Left>
           <Right>
             <Logout size='mini' onClick={this.logout}>Logout</Logout>
+            <form onSubmit={this.search}>
             <Search 
               style={searchStyle}
+              loading={isLoading}
+              onResultSelect={this.handleResultSelect}
+              onSearchChange={_.debounce(this.handleSearchChange, 500, {
+                leading: true,
+              })}
+              results={results}
+              value={value}
             />
+            </form>
           </Right>
         </Wrapper>
       </Container>

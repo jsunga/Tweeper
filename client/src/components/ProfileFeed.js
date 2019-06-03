@@ -177,7 +177,7 @@ export default class ProfileFeed extends Component {
     let tweep = await axios.get(`/api/tweep/retrieve/${value}`)
     tweep.data.date_created = new Date(tweep.data.date_created).toDateString()
     let tweeper_user = await axios.get(`/api/user/get/${tweep.data.user_id}`)
-    this.props.history.push(`/${tweeper_user.data.username}/status/${value}`)
+    window.history.pushState(null, null, `/${tweeper_user.data.username}/status/${value}`)
     let data = tweeper_user.data
     data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
     data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
