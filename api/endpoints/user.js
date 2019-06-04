@@ -45,6 +45,9 @@ router.get('/retrieve/:user', (req, res) => {
 router.get('/all', isAuthenticated, async (req, res) => {
   try {
     let users = await db.many(`select * from users`)
+    await asyncForEach(users, async item => {
+      item.image = assetResolver(item.image_url)
+    })
     res.send(users)
   }
   catch(err) {
@@ -111,5 +114,11 @@ router.post('/logout', (req, res) => {
 router.get('/protected', isAuthenticated, (req, res) => {
   res.send('inside of protected route')
 })
+
+asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
 module.exports = router

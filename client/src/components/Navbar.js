@@ -80,7 +80,7 @@ export default class Navbar extends Component {
     try {
       let res = await axios.get(`/api/user/all`)
       await this.asyncForEach(res.data, async item => {
-        item.title = item.username
+        item.title = '@' + item.username
       })
       this.setState({ users: res.data })
     }
@@ -156,6 +156,7 @@ export default class Navbar extends Component {
               })}
               results={results}
               value={value}
+              fluid
             />
             </form>
           </Right>

@@ -69,22 +69,26 @@ export default class Home extends Component {
 
   handleUpload = e => {
     e.preventDefault()
-    let formdata = new FormData()
-    formdata.append('avatar', this.state.image[0])
-    axios({
-      method: 'post',
-      url: '/api/user/upload',
-      data: formdata,
-      config: { headers: {'Content-Type': 'multipart/form-data' }}
-    })
-    .then(res => {
-      console.log(res.data)
-      this.setState({ modalOpen: false })
-      this.getProfile()
-    })
-    .catch(err => {
-      console.log(err)
-    })
+    if (this.state.image.length !== 0) {
+      let formdata = new FormData()
+      formdata.append('avatar', this.state.image[0])
+      axios({
+        method: 'post',
+        url: '/api/user/upload',
+        data: formdata,
+        config: { headers: {'Content-Type': 'multipart/form-data' }}
+      })
+      .then(res => {
+        console.log(res.data)
+        this.setState({ modalOpen: false })
+        this.getProfile()
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    } else {
+      alert('Choose a file')
+    }
   }
 
   handleFile = e => {
