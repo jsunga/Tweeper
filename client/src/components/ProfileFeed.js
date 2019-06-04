@@ -406,6 +406,7 @@ export default class ProfileFeed extends Component {
           }}
           centered={false} 
           size='small'
+          closeIcon
         >
           <Modal.Content>
             <ModalHeader>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Placeholder, Button } from 'semantic-ui-react'
+import { Placeholder, Button, Modal } from 'semantic-ui-react'
 import { Redirect } from 'react-router-dom'
 import Navbar from './Navbar'
 import Summary from './Summary'
@@ -46,6 +46,8 @@ export default class Home extends Component {
     isAuth: localStorage.getItem('isAuth'),
     user_details: [],
     isLoading: true,
+    modalOpen: false,
+    image: '',
   }
 
   componentDidMount() {
@@ -63,6 +65,31 @@ export default class Home extends Component {
     .catch(err => {
       console.log(err)
     })
+  }
+
+  handleUpload = e => {
+    e.preventDefault()
+    let formdata = new FormData()
+    formdata.append('avatar', this.state.image[0])
+    axios({
+      method: 'post',
+      url: '/api/user/upload',
+      data: formdata,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(res => {
+      console.log(res.data)
+      this.setState({ modalOpen: false })
+      this.getProfile()
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+  handleFile = e => {
+    const image = e.target.files
+    this.setState({ image })
   }
 
   getRender = () => {
@@ -87,7 +114,24 @@ export default class Home extends Component {
       return (
         <>
           <Summary {...this.state}/>
-          <Button style={{width: '295px'}}>Edit Profile</Button>
+          <Button style={{width: '295px'}} onClick={() => this.setState({ modalOpen: true })}>Edit Profile</Button>
+          <Modal 
+            open={this.state.modalOpen}
+            onClose={() => {
+              this.setState({ modalOpen: false })
+            }}
+            centered={false} 
+            size='mini'
+            closeIcon
+          >
+            <Modal.Content>
+              <form onSubmit={this.handleUpload}>
+                <h3>Upload Avatar</h3>
+                <input type="file" name="file" onChange={e => this.handleFile(e)} />
+                <Button style={{marginTop: '20px'}} color='twitter' fluid>Upload</Button>
+              </form>
+            </Modal.Content>
+          </Modal>
         </>
       )
     }

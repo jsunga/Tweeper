@@ -366,6 +366,7 @@ export default class Feed extends Component {
           }}
           centered={false} 
           size='small'
+          closeIcon
         >
           <Modal.Content>
             <ModalHeader>
