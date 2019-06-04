@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import { Button, Message, Icon, Loader, Modal } from 'semantic-ui-react'
 import Reply from './Reply'
 import styled from 'styled-components'
@@ -384,7 +385,7 @@ export default class ProfileFeed extends Component {
                   ) : (
                     <Re>{this.props.match.params.handle} Retweeped</Re>
                   )}
-                  <Username>@{item.username} {item.date_created}</Username>
+                  <Username><Link to={`/${item.username}`}>@{item.username}</Link> {item.date_created}</Username>
                   <div>{item.content}</div>
                   <Totals>
                     <Bottom><StyledButton onClick={() => {this.handleOpen(item.tweep_id)}}><Icon name='reply' color='blue' size='large'/>{item.total_replies}</StyledButton></Bottom>
@@ -411,7 +412,7 @@ export default class ProfileFeed extends Component {
               <ModalImage src={tweeper.image_url} alt="pic"/>
               <ModalDetails>
                 <ModalName>{tweeper.firstname} {tweeper.lastname}</ModalName>
-                <ModalUser>@{tweeper.username}</ModalUser>
+                <ModalUser><Link to={`/${tweeper.username}`}>@{tweeper.username}</Link></ModalUser>
               </ModalDetails>
             </ModalHeader>
             <Content>{tweep.content}</Content>
@@ -423,7 +424,7 @@ export default class ProfileFeed extends Component {
                 <ReplyHeader>
                   <ReplyImage src={item.image_url} alt="pic" />
                   <ReplyWrapper>
-                    <ReplyName>@{item.username}</ReplyName>
+                    <ReplyName><Link to={`/${item.username}`}>@{item.username}</Link></ReplyName>
                     <ReplyContent>{item.content}</ReplyContent>
                     <Created>{item.date_created}</Created>
                   </ReplyWrapper>

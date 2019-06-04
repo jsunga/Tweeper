@@ -3,6 +3,7 @@ const router = express.Router()
 const { db } = require('../db')
 const bcrypt = require('bcryptjs')
 const { assetResolver } = require('../utils')
+const upload = require('../../config/photoStorage')
 const { authenticate } = require('../authentification/passport')
 const isAuthenticated = require('../authentification/isAuthenticated')
 const validator = require('../authentification/validate')
@@ -48,6 +49,30 @@ router.get('/all', isAuthenticated, async (req, res) => {
   }
   catch(err) {
     console.log(err)
+  }
+})
+
+//uploading photo to user
+router.post('/upload', upload.single('avatar'), (req, res) => {
+  const userId = req.user.user_id
+  if(!req.file) {
+    console.log('no file received')
+    res.status(400)
+    res.send('no file received')
+  } else {
+    console.log('file received')
+    
+    const relativePath = req.file.path.substring(10)
+    console.log(relativePath)
+
+    db.none(`update users set image_url=$2 where user_id=$1`, [userId, relativePath])
+    .then( _ => {
+      res.sendStatus(201)
+    })
+    .catch(err => {
+      console.log(err)
+      res.sendStatus(400)
+    })
   }
 })
 
