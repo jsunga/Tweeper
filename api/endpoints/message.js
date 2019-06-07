@@ -8,12 +8,16 @@ router.post(`/new`, isAuthenticated, async (req, res) => {
   const from_userId = req.user.user_id
   const { to_userId } = req.body
   try {
-    let conversation = await db.one(`insert into conversations (from_user_id, to_user_id) values ($1, $2) returning conversation_id`, [from_userId, to_userId])
-    res.send(conversation)
+    await db.one(`select * from conversations where ( (from_user_id=$1 AND to_user_id=$2) OR (from_user_id=$2 AND to_user_id=$1) )`,
+    [from_userId, to_userId])
+    res.send('conversation already exists')
   } 
   catch(err) {
     console.log(err)
-    res.send('conversation already exists')
+    if (err.message = 'No data returned from the query.') {
+      let conversation = await db.one(`insert into conversations (from_user_id, to_user_id) values ($1, $2) returning conversation_id`, [from_userId, to_userId])
+      res.send(conversation)
+    }
   }
 })
 

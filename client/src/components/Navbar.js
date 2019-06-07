@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Search, Icon, Modal } from 'semantic-ui-react'
+import { Button, Search, Icon, Modal, Input } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 import { animateScroll } from "react-scroll"
 import _ from 'lodash'
@@ -183,26 +183,15 @@ const RoomContainer = styled.div`
 `
 
 const MessageWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
   margin-top: 15px;
-`
-const TextWrapper = styled.div`
-  width: 80%;
-`
-const TextArea = styled.textarea`
   width: 100%;
-  height: 50px;
-  resize: none;
-  box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  background-color: #f8f8f8;
 `
 
-const ButtonWrapper = styled.div`
-  width: 20%;
-  padding-left: 5px;
+const NewHeader = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-bottom: 10px;
 `
 
 const searchStyle = {
@@ -214,6 +203,7 @@ export default class Navbar extends Component {
 
   state = {
     user_id: localStorage.getItem('user_id'),
+    local_username: localStorage.getItem('username'),
     username: '',
     isLoading: false,
     results: [],
@@ -225,6 +215,7 @@ export default class Navbar extends Component {
     modaOpen: false,
     noResults: false,
     render: 'direct messages',
+    message: '',
   }
 
   componentDidMount() {
@@ -291,7 +282,7 @@ export default class Navbar extends Component {
   }
 
   messages = () => {
-    this.setState({ modalOpen: true })
+    this.setState({ modalOpen: true, value: '' })
     this.getAllConversations()
   }
 
@@ -301,7 +292,6 @@ export default class Navbar extends Component {
       userchat: user,
     })
     let messages = await axios.get(`/api/message/receive/${user.user_id}`)
-    console.log(messages.data)
     this.setState({conversation: messages.data}, this.scrollToBottom())
   }
 
@@ -343,13 +333,65 @@ export default class Navbar extends Component {
     }
   }
 
+  sendMessage = async e => {
+    e.preventDefault()
+    if (this.state.message.length !== 0) {
+      await axios.post('/api/message/send', {
+        message: this.state.message,
+        to_userId: this.state.userchat.user_id
+      })
+      this.setState({ message: '' })
+      this.getConversation(this.state.userchat)
+    }
+  }
+
+  newMessage = async () => {
+    this.setState({ render: 'new message' })
+  }
+
+  createConversation = async (e, { result }) => {
+    e.preventDefault()
+    if (this.state.local_username !== result.title) {
+      try {
+        let user = await axios.get(`/api/user/retrieve/${result.title}`)
+        await axios.post('/api/message/new', {
+          to_userId: user.data.user_id
+        })
+        this.getConversation(user.data)
+        this.setState({ value: '' })
+      }
+      catch(err) { }
+    }
+  }
+
+  createNew = async e => {
+    e.preventDefault()
+    try {
+      let user = await axios.get(`/api/user/retrieve/${this.state.value}`)
+      await axios.post('/api/message/new', {
+        to_userId: user.data.user_id
+      })
+      this.getConversation(user.data)
+      this.setState({ value: '' })
+    }
+    catch(err) {
+      console.log(err)
+      this.setState({ value: '' })
+    }
+  }
+
+  back = () => {
+    this.setState({ render: 'direct messages', conversation: [], value: '' })
+    this.getAllConversations()
+  }
+
   getRender = () => {
     if (this.state.render === 'direct messages') {
       return (
         <>
           <Header>
             <Title>Direct Messages</Title>
-            <New><Button color='twitter' circular>New Message</Button></New>
+            <New><Button color='twitter' onClick={this.newMessage} circular>New Message</Button></New>
           </Header>
           {this.state.conversations.map(item => (
             <Conversations key={item.user_id} onClick={() => {this.getConversation(item)}}>
@@ -367,7 +409,7 @@ export default class Navbar extends Component {
       return (
         <>
           <Chat>
-            <Back><IconButton onClick={() => this.setState({ render: 'direct messages', conversation: [] })}><Icon name='arrow left' size='large' color='blue' /></IconButton></Back>
+            <Back><IconButton onClick={this.back}><Icon name='arrow left' size='large' color='blue' /></IconButton></Back>
             <ChatHeader>
               <ImageWrapper><ChatImage src={this.state.userchat.image_url} alt="pic" /></ImageWrapper>
               <Body>
@@ -392,9 +434,33 @@ export default class Navbar extends Component {
           ))}
           </RoomContainer>
           <MessageWrapper>
-            <TextWrapper><TextArea /></TextWrapper>
-            <ButtonWrapper><Button color='twitter' size='huge' fluid>Send</Button></ButtonWrapper>
+            <form onSubmit={this.sendMessage}>
+              <Input icon={{ name: 'send', circular: true, link: true }} value={this.state.message} onChange={e => {this.setState({message: e.target.value})}} fluid/>
+            </form>
           </MessageWrapper>
+        </>
+      )
+    }
+    if (this.state.render === 'new message') {
+      return (
+        <>
+          <Chat>
+            <Back><IconButton onClick={this.back}><Icon name='arrow left' size='large' color='blue' /></IconButton></Back>
+            <ChatHeader><h2>New Message</h2></ChatHeader>
+          </Chat>
+          <NewHeader>Send message to:</NewHeader>
+          <form onSubmit={this.createNew}>
+            <Search 
+              loading={this.state.isLoading}
+              onResultSelect={this.createConversation}
+              onSearchChange={_.debounce(this.handleSearchChange, 500, {
+                leading: true,
+              })}
+              results={this.state.results}
+              value={this.state.value}
+              input={{ fluid: true }}
+            />
+          </form>
         </>
       )
     }
