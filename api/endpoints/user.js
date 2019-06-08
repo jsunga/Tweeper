@@ -10,7 +10,7 @@ const validator = require('../authentification/validate')
 
 const SALT = 8
 
-//get basic information of a user
+//get basic information of a user using user id
 router.get('/get/:user_id', isAuthenticated, (req, res) => {
   const userId = req.params.user_id
 
@@ -26,6 +26,7 @@ router.get('/get/:user_id', isAuthenticated, (req, res) => {
   })
 })
 
+//get basic information of a user using username
 router.get('/retrieve/:user', (req, res) => {
   const username = req.params.user
 
@@ -41,7 +42,7 @@ router.get('/retrieve/:user', (req, res) => {
   })
 })
 
-//get all users
+//get all users in the database
 router.get('/all', isAuthenticated, async (req, res) => {
   try {
     let users = await db.many(`select * from users`)
@@ -55,7 +56,7 @@ router.get('/all', isAuthenticated, async (req, res) => {
   }
 })
 
-//uploading photo to user
+//user upload avatar photo
 router.post('/upload', upload.single('avatar'), (req, res) => {
   const userId = req.user.user_id
   if(!req.file) {
@@ -79,7 +80,7 @@ router.post('/upload', upload.single('avatar'), (req, res) => {
   }
 })
 
-//register
+//create an account
 router.post('/register', (req, res, next) => {
   const { username, firstname, lastname, password } = req.body
 
@@ -115,6 +116,7 @@ router.get('/protected', isAuthenticated, (req, res) => {
   res.send('inside of protected route')
 })
 
+//async forEach method
 asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);

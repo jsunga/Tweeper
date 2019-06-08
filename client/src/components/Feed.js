@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import { Button, Icon, Loader, Modal } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import axios from 'axios'
 
@@ -157,11 +157,11 @@ export default class Feed extends Component {
 
   state = {
     user_id: localStorage.getItem('user_id'),
-    tweep_msg: '',
     tweeps: [],
     replies: [],
     tweep: [],
     tweeper: [],
+    tweep_msg: '',
     message: '',
     isLoading: true,
     modalOpen: false,
@@ -171,10 +171,14 @@ export default class Feed extends Component {
     this.getTweeps()
   }
 
+  //open modal
   handleOpen = async value => {
     this.getReplies(value)
   }
 
+  // 1) open the replies modal
+  // 2) get tweep and owner details
+  // 3) get all the replies of the tweep with user details
   getReplies = async value => {
     this.setState({ modalOpen: true })
     let tweep = await axios.get(`/api/tweep/retrieve/${value}`)
@@ -195,6 +199,10 @@ export default class Feed extends Component {
     this.setState({ replies: users.data })
   }
 
+  // 1) get all followers of local user
+  // 2) get all the tweeps of each follower
+  // 3) get all the retweeps of each follow
+  // 4) make the dates readable and sort them from earliest to latest
   getTweeps = async () => {
     let temp = []
     let followers = await axios.get(`/api/follow/get_following/${this.state.user_id}`)
@@ -235,6 +243,7 @@ export default class Feed extends Component {
     this.setState({ tweeps: this.getUnique(temp, 'tweep_id'), isLoading: false })
   }
 
+  //dont show tweep if it is already retweeped in the feed
   getUnique = (arr, comp) => {
     const unique = arr
     .map(e => e[comp])
@@ -243,6 +252,7 @@ export default class Feed extends Component {
     return unique;
   }
 
+  //compose a tweep
   tweep = () => {
     if (this.state.tweep.length === 0) {
       alert('No empty tweep')
@@ -260,12 +270,14 @@ export default class Feed extends Component {
     }
   }
 
+  //async forEach method
   asyncForEach = async (array, callback) => {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
     }
   }
 
+  //like a tweep
   like = value => {
     axios.post(`/api/like`, {
       tweepId: value
@@ -322,6 +334,7 @@ export default class Feed extends Component {
     }
   }
 
+  //loading placeholder
   getRender = () => {
     if (this.state.isLoading === true) {
       return <Loader style={{marginTop: '20px'}} active inline='centered' />

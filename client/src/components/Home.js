@@ -45,9 +45,9 @@ export default class Home extends Component {
     user_id: localStorage.getItem('user_id'),
     isAuth: localStorage.getItem('isAuth'),
     user_details: [],
+    image: '',
     isLoading: true,
     modalOpen: false,
-    image: '',
   }
 
   componentDidMount() {

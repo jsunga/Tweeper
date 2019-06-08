@@ -70,6 +70,7 @@ export default class Home extends Component {
     })
   }
 
+  //loading placeholder
   getRender = () => {
     if (this.state.isLoading === true) {
       return (

@@ -37,8 +37,8 @@ export default class Following extends Component {
 
   state = {
     user_details: [],
-    isLoading: true,
     users: [],
+    isLoading: true,
     noResults: false,
     error: false,
   }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
 import { Button, Message, Icon, Loader, Modal } from 'semantic-ui-react'
+import { Link } from 'react-router-dom'
 import Reply from './Reply'
 import styled from 'styled-components'
 import axios from 'axios'
@@ -153,10 +153,10 @@ export default class ProfileFeed extends Component {
     local_user_id: localStorage.getItem('user_id'),
     profile_details: [],
     tweeps: [],
-    tweep_id: '',
     replies: [],
     tweep: [],
     tweeper: [],
+    tweep_id: '',
     message: '',
     noResults: false,
     isLoading: true,
@@ -169,10 +169,14 @@ export default class ProfileFeed extends Component {
     this.getDetails(this.props.match.params.handle)
   }
 
+  //open the modal
   handleOpen = async value => {
     this.getReplies(value)
   }
 
+  // 1) open the replies modal
+  // 2) get tweep and owner details
+  // 3) get all the replies of the tweep with user details
   getReplies = async value => {
     this.setState({ modalOpen: true })
     let tweep = await axios.get(`/api/tweep/retrieve/${value}`)
@@ -210,6 +214,12 @@ export default class ProfileFeed extends Component {
     })
   }
 
+  // 1) get user details
+  // 2) get user tweeps
+  // 3) get user retweeps
+  // 4) combine tweeps and retweeps
+  // 5) fix some formatting like full name and date created
+  // 6) sort the combined list
   getDetails = async handle => {
     try {
       let user_id = ''
@@ -252,6 +262,7 @@ export default class ProfileFeed extends Component {
     }
   }
 
+  //async forEach method
   asyncForEach = async (array, callback) => {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
@@ -346,6 +357,7 @@ export default class ProfileFeed extends Component {
     }
   }
 
+  //handle follow button where user is @ local profile, following user, or not following user
   getFollowButton = () => {
     if (this.props.match.params.handle === this.state.local_user) {
       return null

@@ -45,9 +45,9 @@ const Header = styled.h1`
 export default class Home extends Component {
 
   state = {
-    render: 'login',
     user_id: localStorage.getItem('user_id'),
     isAuth: localStorage.getItem('isAuth'),
+    render: 'login',
   }
 
   register = () => {
@@ -58,6 +58,7 @@ export default class Home extends Component {
     this.setState({ render: 'login' })
   }
 
+  //handle which component to render
   getRender = () => {
     if (this.state.render === 'login') {
       return <Login event={this.register} {...this.props}/>
@@ -67,11 +68,9 @@ export default class Home extends Component {
   }
 
   render() {
-
     if (this.state.isAuth === 'true') {
       return <Redirect to="/home"/>
     }
-
     return (
       <Container>
         <Left>
@@ -87,6 +86,6 @@ export default class Home extends Component {
         </Right>
       </Container>
     )
-
   }
+
 }

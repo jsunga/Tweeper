@@ -66,7 +66,6 @@ const Nav = styled(Link)`
 `
 
 const Summary = props => {
-
   return (
     <Container>
       <ProfileImage><Image src={props.user_details.image_url} alt="pic"/></ProfileImage>
@@ -88,7 +87,6 @@ const Summary = props => {
       </Totals>
     </Container>
   )
-  
 }
 
 export default Summary

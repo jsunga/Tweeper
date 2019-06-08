@@ -37,8 +37,8 @@ export default class Followers extends Component {
 
   state = {
     user_details: [],
-    isLoading: true,
     users: [],
+    isLoading: true,
     noResults: false,
     error: false,
   }
@@ -48,6 +48,8 @@ export default class Followers extends Component {
     this.getFollowers(handle)
   }
 
+  // 1) get followers list with user data
+  // 2) fix some formatting such as full name
   getFollowers = handle => {
     axios.get(`/api/user/retrieve/${handle}`)
     .then(res => {
@@ -81,6 +83,7 @@ export default class Followers extends Component {
     })
   }
 
+  //loading placeholder
   getRender = () => {
     if (this.state.isLoading === true) {
       return (
@@ -106,6 +109,7 @@ export default class Followers extends Component {
     }
   }
 
+  //handle wrong url
   render() {
     if (this.state.error === true) {
       return (

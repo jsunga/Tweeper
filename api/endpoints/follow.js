@@ -3,11 +3,6 @@ const router = express.Router()
 const { db } = require('../db')
 const isAuthenticated = require('../authentification/isAuthenticated')
 
-/*
-todo:
-check if user is already following
-*/
-
 //get user following list
 router.get('/get_following/:user_id', isAuthenticated, (req, res) => {
   const userId = req.params.user_id
@@ -22,6 +17,7 @@ router.get('/get_following/:user_id', isAuthenticated, (req, res) => {
   })
 })
 
+//get user followers list
 router.get('/get_followers/:user_id', isAuthenticated, (req, res) => {
   const userId = req.params.user_id
   db.any(`SELECT user_id FROM following WHERE following_user_id=$1`, [userId])

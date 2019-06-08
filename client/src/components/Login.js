@@ -38,6 +38,7 @@ export default class Login extends Component {
     isLoading: false,
   }
 
+  //login with simple validation
   login = e => {
     e.preventDefault()
     const { username, password } = this.state
@@ -65,7 +66,6 @@ export default class Login extends Component {
   }
   
   render() {
-
     return (
       <Container>
         <Form onSubmit={this.login}>
@@ -92,6 +92,6 @@ export default class Login extends Component {
         <Footer>- Jawyn Sunga</Footer>
       </Container>
     )
-    
   }
+
 }

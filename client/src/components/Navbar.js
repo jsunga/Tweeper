@@ -361,21 +361,27 @@ export default class Navbar extends Component {
         this.setState({ value: '' })
       }
       catch(err) { }
+    } else {
+      this.setState({ value: '' })
     }
   }
 
   createNew = async e => {
     e.preventDefault()
-    try {
-      let user = await axios.get(`/api/user/retrieve/${this.state.value}`)
-      await axios.post('/api/message/new', {
-        to_userId: user.data.user_id
-      })
-      this.getConversation(user.data)
-      this.setState({ value: '' })
-    }
-    catch(err) {
-      console.log(err)
+    if (this.state.local_username !== this.state.value) {
+      try {
+        let user = await axios.get(`/api/user/retrieve/${this.state.value}`)
+        await axios.post('/api/message/new', {
+          to_userId: user.data.user_id
+        })
+        this.getConversation(user.data)
+        this.setState({ value: '' })
+      }
+      catch(err) {
+        console.log(err)
+        this.setState({ value: '' })
+      }
+    } else {
       this.setState({ value: '' })
     }
   }

@@ -40,6 +40,7 @@ export default class Register extends Component {
     isLoading: false,
   }
 
+  //create an account with simple validation
   register = e => {
     e.preventDefault()
     const { username, firstname, lastname, password } = this.state
