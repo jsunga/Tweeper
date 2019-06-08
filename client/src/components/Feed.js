@@ -254,11 +254,11 @@ export default class Feed extends Component {
 
   //compose a tweep
   tweep = () => {
-    if (this.state.tweep.length === 0) {
+    if (this.state.tweep_msg.length === 0) {
       alert('No empty tweep')
     } else {
       axios.post('/api/tweep', {
-        content: this.state.tweep
+        content: this.state.tweep_msg
       })
       .then(() => {
         this.setState({ tweep_msg: '' })

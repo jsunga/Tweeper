@@ -39,7 +39,7 @@ const inputValidation = (username, first, last, password, res) => {
 }
 
 const dbInvalidHandler = (err, res) => {
-  if(err.constraint === 'user_ukey') {
+  if(err.constraint === 'users_username_key') {
     console.log('inside of username err: ' + err.constraint)
     res.status(400)
     res.send('username already used')
