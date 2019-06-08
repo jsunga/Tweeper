@@ -41,8 +41,7 @@
     "pg-promise": "^8.6.3",
     "sequelize": "^5.1.0",
     "sequelize-cli": "^5.4.0",
-    "uuid": "^3.3.2",
-    "ws": "^7.0.0"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"

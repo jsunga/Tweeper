@@ -218,17 +218,9 @@ export default class Navbar extends Component {
     message: '',
   }
 
-  ws = new WebSocket('ws://localhost:8080');
-
   componentDidMount() {
     this.getUser()
     this.getAllUsers()
-    this.ws.onopen = () => {
-      console.log('connected')
-    }
-    this.ws.onclose = () => {
-      console.log('disconnected')
-    }
   }
 
   getAllUsers = async () => {
@@ -369,27 +361,21 @@ export default class Navbar extends Component {
         this.setState({ value: '' })
       }
       catch(err) { }
-    } else {
-      this.setState({ value: '' })
     }
   }
 
   createNew = async e => {
     e.preventDefault()
-    if (this.state.local_username !== this.state.value) {
-      try {
-        let user = await axios.get(`/api/user/retrieve/${this.state.value}`)
-        await axios.post('/api/message/new', {
-          to_userId: user.data.user_id
-        })
-        this.getConversation(user.data)
-        this.setState({ value: '' })
-      }
-      catch(err) {
-        console.log(err)
-        this.setState({ value: '' })
-      }
-    } else {
+    try {
+      let user = await axios.get(`/api/user/retrieve/${this.state.value}`)
+      await axios.post('/api/message/new', {
+        to_userId: user.data.user_id
+      })
+      this.getConversation(user.data)
+      this.setState({ value: '' })
+    }
+    catch(err) {
+      console.log(err)
       this.setState({ value: '' })
     }
   }
