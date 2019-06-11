@@ -9,13 +9,11 @@ module.exports = {
         {
           tweep_id: {
             type: Sequelize.UUID,
-            unique: true,
             foreignKey: true,
             allowNull: false
           },
           liker_user_id: {
             type: Sequelize.UUID,
-            unique: true,
             foreignKey: true,
             allowNull: false
           },

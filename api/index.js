@@ -21,4 +21,12 @@ app.use('/api/assets', express.static('api/assets'))
 
 app.use('/api', endpoints)
 
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build/index.html'), err => {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
+
 app.listen(port, () => console.log(`Listening on port ${port}`))

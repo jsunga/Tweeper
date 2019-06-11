@@ -279,40 +279,44 @@ export default class Feed extends Component {
 
   //like a tweep
   like = value => {
-    axios.post(`/api/like`, {
-      tweepId: value
-    })
-    .then(() => {
-      this.getTweeps()
-    })
-    .catch(err => {
-      if (err.response.status === 400) {
+    axios.get(`/api/like/check/${value}`)
+    .then(res => {
+      if (res.data === 'like') {
+        axios.post('/api/like', { tweepId: value })
+        .then(() => {
+          this.getTweeps()
+        })
+      }
+      if (res.data === 'unlike') {
         axios.delete(`/api/like/unlike/${value}`)
         .then(() => {
           this.getTweeps()
         })
       }
-      console.log(err.response.status)
+    })
+    .catch(err => {
+      console.log(err)
     })
   }
 
   retweep = value => {
-    axios.post(`/api/retweep`, {
-      tweepId: value
-    })
-    .then(() => {
-      this.getTweeps()
-    })
-    .catch(err => {
-      if (err.response.status === 400) {
+    axios.get(`/api/retweep/check/${value}`)
+    .then(res => {
+      if (res.data === 'retweep') {
+        axios.post('/api/retweep', { tweepId: value })
+        .then(() => {
+          this.getTweeps()
+        })
+      }
+      if (res.data === 'undo retweep') {
         axios.delete(`/api/retweep/undo/${value}`)
         .then(() => {
           this.getTweeps()
         })
-        .catch(err => {
-          console.log(err.response.status)
-        }) 
       }
+    })
+    .catch(err => {
+      console.log(err)
     })
   }
 

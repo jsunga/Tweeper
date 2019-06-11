@@ -17,6 +17,19 @@ router.get('/get/:user_id', (req ,res) => {
   })
 })
 
+//check if user already retweeped a tweep
+router.get('/check/:tweep_id', isAuthenticated, async (req, res) => {
+  const userId = req.user.user_id
+  const tweepId = req.params.tweep_id
+  try {
+    await db.one(`select * from retweeps where tweep_id=$1 and user_id=$2`, [tweepId, userId])
+    res.send('undo retweep')
+  }
+  catch(err) {
+    res.send('retweep')
+  }
+})
+
 //retweep
 router.post('/', isAuthenticated, (req, res) => {
   const userId = req.user.user_id

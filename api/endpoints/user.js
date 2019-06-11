@@ -87,14 +87,14 @@ router.post('/register', (req, res, next) => {
   if( !validator.inputValidation(username, firstname, lastname, password, res)) return
 
   bcrypt.hash(password, SALT, (err, hash) => {
-    db.one(`INSERT INTO users (username, firstname, lastname, password) VALUES ($1, $2, $3, $4) RETURNING user_id`,
+    db.one(`INSERT INTO users (username, firstname, lastname, password) VALUES ($1, $2, $3, $4) RETURNING user_id, username`,
     [username, firstname, lastname, hash])
-    .then(userid => {
-      req.login(userid, err => {
+    .then(user => {
+      req.login(user, err => {
         if(err) {
           return next(err)
         }
-        res.json(userid)
+        res.json(user)
       })
     })
     .catch(err => {

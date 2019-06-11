@@ -235,14 +235,16 @@ export default class ProfileFeed extends Component {
       temp = tweeps.data
       try {
         let retweeps = await axios.get(`/api/retweep/get/${user_id}`)
-        await this.asyncForEach(retweeps.data, async item => {
-          let response = await axios.get(`/api/tweep/retrieve/${item.tweep_id}`)
-          let details = await axios.get(`/api/user/get/${response.data.user_id}`)
-          response.data.date_created = item.date_created
-          response.data.username = details.data.username
-          response.data.image_url = details.data.image_url
-          temp.push(response.data)
-        })
+        if (retweeps.data !== 'no retweeps') {
+          await this.asyncForEach(retweeps.data, async item => {
+            let response = await axios.get(`/api/tweep/retrieve/${item.tweep_id}`)
+            let details = await axios.get(`/api/user/get/${response.data.user_id}`)
+            response.data.date_created = item.date_created
+            response.data.username = details.data.username
+            response.data.image_url = details.data.image_url
+            temp.push(response.data)
+          })
+        }
       }
       catch(err) { }
       temp.sort((a, b) => {
@@ -302,40 +304,44 @@ export default class ProfileFeed extends Component {
   }
 
   like = value => {
-    axios.post(`/api/like`, {
-      tweepId: value
-    })
-    .then(() => {
-      this.getDetails(this.props.match.params.handle)
-    })
-    .catch(err => {
-      if (err.response.status === 400) {
+    axios.get(`/api/like/check/${value}`)
+    .then(res => {
+      if (res.data === 'like') {
+        axios.post('/api/like', { tweepId: value })
+        .then(() => {
+          this.getDetails(this.props.match.params.handle)
+        })
+      }
+      if (res.data === 'unlike') {
         axios.delete(`/api/like/unlike/${value}`)
         .then(() => {
           this.getDetails(this.props.match.params.handle)
         })
       }
-      console.log(err.response.status)
+    })
+    .catch(err => {
+      console.log(err)
     })
   }
 
   retweep = value => {
-    axios.post(`/api/retweep`, {
-      tweepId: value
-    })
-    .then(() => {
-      this.getDetails(this.props.match.params.handle)
-    })
-    .catch(err => {
-      if (err.response.status === 400) {
+    axios.get(`/api/retweep/check/${value}`)
+    .then(res => {
+      if (res.data === 'retweep') {
+        axios.post('/api/retweep', { tweepId: value })
+        .then(() => {
+          this.getDetails(this.props.match.params.handle)
+        })
+      }
+      if (res.data === 'undo retweep') {
         axios.delete(`/api/retweep/undo/${value}`)
         .then(() => {
           this.getDetails(this.props.match.params.handle)
         })
-        .catch(err => {
-          console.log(err.response.status)
-        }) 
       }
+    })
+    .catch(err => {
+      console.log(err)
     })
   }
 

@@ -18,6 +18,19 @@ router.get('/get/:tweep_id', isAuthenticated, (req, res) => {
 
 })
 
+//check if user already liked a tweep
+router.get('/check/:tweep_id', isAuthenticated, async (req, res) => {
+  const userId = req.user.user_id
+  const tweepId = req.params.tweep_id
+  try {
+    await db.one(`select * from likes where tweep_id=$1 and liker_user_id=$2`, [tweepId, userId])
+    res.send('unlike')
+  }
+  catch(err) {
+    res.send('like')
+  }
+})
+
 //like a tweep
 router.post('/', isAuthenticated, (req, res) => {
   const userId = req.user.user_id
