@@ -291,8 +291,13 @@ export default class Navbar extends Component {
       render: 'chatroom',
       userchat: user,
     })
-    let messages = await axios.get(`/api/message/receive/${user.user_id}`)
-    this.setState({conversation: messages.data}, this.scrollToBottom())
+    try {
+      let messages = await axios.get(`/api/message/receive/${user.user_id}`)
+      this.setState({conversation: messages.data}, this.scrollToBottom())
+    }
+    catch(err) {
+      console.log('no messages')
+    }
   }
 
   scrollToBottom = () => {
@@ -354,13 +359,21 @@ export default class Navbar extends Component {
     if (this.state.local_username !== result.title) {
       try {
         let user = await axios.get(`/api/user/retrieve/${result.title}`)
-        await axios.post('/api/message/new', {
-          to_userId: user.data.user_id
-        })
-        this.getConversation(user.data)
+        let check = await axios.get(`/api/message/check/${user.data.user_id}`)
+        if (check.data === 'create') {
+          await axios.post('/api/message/new', { to_userId: user.data.user_id })
+          this.setState({ value: '' })
+          this.getConversation(user.data)
+        }
+        if (check.data === 'conversation already exists') {
+          this.setState({ value: '' })
+          this.getConversation(user.data)
+        }
+      }
+      catch(err) {
+        console.log(err)
         this.setState({ value: '' })
       }
-      catch(err) { }
     } else {
       this.setState({ value: '' })
     }
@@ -371,11 +384,16 @@ export default class Navbar extends Component {
     if (this.state.local_username !== this.state.value) {
       try {
         let user = await axios.get(`/api/user/retrieve/${this.state.value}`)
-        await axios.post('/api/message/new', {
-          to_userId: user.data.user_id
-        })
-        this.getConversation(user.data)
-        this.setState({ value: '' })
+        let check = await axios.get(`/api/message/check/${user.data.user_id}`)
+        if (check.data === 'create') {
+          await axios.post('/api/message/new', { to_userId: user.data.user_id })
+          this.setState({ value: '' })
+          this.getConversation(user.data)
+        }
+        if (check.data === 'conversation already exists') {
+          this.setState({ value: '' })
+          this.getConversation(user.data)
+        }
       }
       catch(err) {
         console.log(err)

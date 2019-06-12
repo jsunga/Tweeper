@@ -15,13 +15,11 @@ module.exports = {
           },
           from_user_id: {
             type: Sequelize.UUID,
-            unique: true,
             foreignKey: true,
             allowNull: false
           },
           to_user_id: {
             type: Sequelize.UUID,
-            unique: true,
             foreignKey: true,
             allowNull: false
           },
