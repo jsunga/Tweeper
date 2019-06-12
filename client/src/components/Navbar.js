@@ -459,7 +459,7 @@ export default class Navbar extends Component {
           </RoomContainer>
           <MessageWrapper>
             <form onSubmit={this.sendMessage}>
-              <Input icon={{ name: 'send', circular: true, link: true }} value={this.state.message} onChange={e => {this.setState({message: e.target.value})}} fluid/>
+              <Input action={{ icon: 'search', color: 'blue' }} value={this.state.message} onChange={e => {this.setState({message: e.target.value})}} fluid/>
             </form>
           </MessageWrapper>
         </>
