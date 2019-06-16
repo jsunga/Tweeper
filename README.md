@@ -2,6 +2,7 @@
 - Twitter clone full stack project
 - **NOT** mobile friendly
 - Developed on 1280x800
+- Demo URL (Amazon EC2): http://13.52.178.103/
 
 # Development
 - PostgreSQL
