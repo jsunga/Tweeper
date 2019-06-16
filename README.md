@@ -1,5 +1,7 @@
 # Tweeper
 - Twitter clone full stack project
+- NOT mobile friendly
+- Developed on 1280x800
 
 # Development
 - PostgreSQL
