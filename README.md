@@ -1,5 +1,5 @@
 # Tweeper
-Twitter clone full stack project
+- Twitter clone full stack project
 
 # Development
 - PostgreSQL
