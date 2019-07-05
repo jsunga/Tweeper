@@ -1,15 +1,11 @@
 # Tweeper
 - Twitter clone full stack project
-- **NOT** mobile friendly
-- Developed on 1280x800
 - Demo URL (Amazon EC2): http://13.52.178.103/
 
 # Development
-- PostgreSQL
-- Express.js
 - React.js
-- Node.js
-- NPM
+- Node.js/Express.js
+- PostgreSQL
 
 # Screenshots
 ![alt text](https://i.imgur.com/QF6vFNP.png)
