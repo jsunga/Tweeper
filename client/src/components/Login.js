@@ -13,28 +13,11 @@ const Label = styled.h1`
   text-align: center;
 `
 
-const Header = styled.div`
-  padding-top: 15px;
-  font-size: 20px;
-  font-weight: bold;
-`
-
-const Body = styled.div`
-  padding-top: 10px;
-  font-size: 17px;
-`
-
-const Footer = styled.div`
-  font-size: 16px;
-  font-weight: bold;
-  padding-top: 10px;
-`
-
 export default class Login extends Component {
 
   state = {
-    username: '',
-    password: '',
+    username: 'jsunga',
+    password: '123456',
     isLoading: false,
   }
 
@@ -71,10 +54,10 @@ export default class Login extends Component {
         <Form onSubmit={this.login}>
           <Label>Log in to Tweeper</Label>
           <Form.Field>
-            <input placeholder='Username' onChange={e => {this.setState({ username: e.target.value })}}/>
+            <input placeholder='Username' value={this.state.username} onChange={e => {this.setState({ username: e.target.value })}}/>
           </Form.Field>
           <Form.Field>
-            <input type='password' placeholder='Password' onChange={e => {this.setState({ password: e.target.value })}}/>
+            <input type='password' placeholder='Password' value={this.state.password} onChange={e => {this.setState({ password: e.target.value })}}/>
           </Form.Field>
           {this.state.isLoading === false ? (
             <Button fluid primary>LOG IN</Button>
@@ -85,11 +68,6 @@ export default class Login extends Component {
         <Message style={{textAlign: 'right'}}>
           New to us? <Button size='mini' onClick={this.props.event}>Sign Up</Button>
         </Message>
-        <Header>*DISCLAIMER</Header>
-        <Body>This application is for project and educational purposes 
-        only to practice full stack development. No copyright infringement 
-        intended towards Twitter.</Body>
-        <Footer>- Jawyn Sunga</Footer>
       </Container>
     )
   }

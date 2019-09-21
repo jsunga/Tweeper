@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import axios from 'axios'
 
 const Container = styled.div`
+  min-width: 772px;
   position: sticky;
   top: 0;
   height: 50px;
@@ -15,6 +16,7 @@ const Container = styled.div`
   box-shadow: 0px 3px 3px grey;
   display: flex;
   flex-direction: row;
+  padding: 0px 10px;
 `
 
 const Left = styled.div`
@@ -226,9 +228,6 @@ export default class Navbar extends Component {
   getAllUsers = async () => {
     try {
       let res = await axios.get(`/api/user/all`)
-      await this.asyncForEach(res.data, async item => {
-        item.title = item.username
-      })
       this.setState({ users: res.data })
     }
     catch(err) { }

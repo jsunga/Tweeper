@@ -160,7 +160,6 @@ export default class Feed extends Component {
     tweeps: [],
     replies: [],
     tweep: [],
-    tweeper: [],
     tweep_msg: '',
     message: '',
     isLoading: true,
@@ -181,75 +180,27 @@ export default class Feed extends Component {
   // 3) get all the replies of the tweep with user details
   getReplies = async value => {
     this.setState({ modalOpen: true })
+
     let tweep = await axios.get(`/api/tweep/retrieve/${value}`)
-    tweep.data.date_created = new Date(tweep.data.date_created).toDateString()
-    let tweeper_user = await axios.get(`/api/user/get/${tweep.data.user_id}`)
-    window.history.pushState(null, null, `/${tweeper_user.data.username}/status/${value}`)
-    let data = tweeper_user.data
-    data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
-    data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
-    this.setState({ tweep: tweep.data, tweeper: data })
-    let users = await axios.get(`/api/reply/get/${value}`)
-    await this.asyncForEach(users.data, async item => {
-      let details = await axios.get(`/api/user/get/${item.replier_user_id}`)
-      item.image_url = details.data.image_url
-      item.username = details.data.username
-      item.date_created = new Date(item.date_created).toDateString()
-    })
-    this.setState({ replies: users.data })
+    window.history.pushState(null, null, `/${tweep.data.username}/status/${value}`)
+    this.setState({ tweep: tweep.data })
+
+    let replies = await axios.get(`/api/reply/get/${value}`)
+    this.setState({ replies: replies.data })
   }
 
-  // 1) get all followers of local user
-  // 2) get all the tweeps of each follower
-  // 3) get all the retweeps of each follow
-  // 4) make the dates readable and sort them from earliest to latest
   getTweeps = async () => {
-    let temp = []
-    let followers = await axios.get(`/api/follow/get_following/${this.state.user_id}`)
-    await this.asyncForEach(followers.data, async item => {
-      try {
-        let tweeps = await axios.get(`/api/tweep/get/${item.following_user_id}`)
-        await this.asyncForEach(tweeps.data, async item => {
-          let details = await axios.get(`/api/user/get/${item.user_id}`)
-          item.image_url = details.data.image_url
-          item.username = details.data.username
-          temp.push(item)
-        })
+    try {
+      let timeline = await axios.get('/api/tweep/get/timeline')
+      if (timeline.data === 'No data returned from the query.') {
+        this.setState({ isLoading: false })
+      } else {
+        this.setState({ tweeps: timeline.data, isLoading: false })
       }
-      catch(err) { }
-      try {
-        let retweeps = await axios.get(`/api/retweep/get/${item.following_user_id}`)
-        await this.asyncForEach(retweeps.data, async item => {
-          let retweeper_details = await axios.get(`/api/user/get/${item.user_id}`)
-          let response = await axios.get(`/api/tweep/retrieve/${item.tweep_id}`)
-          let original_details = await axios.get(`/api/user/get/${response.data.user_id}`)
-          response.data.retweeper_username = retweeper_details.data.username
-          response.data.date_created = item.date_created
-          response.data.username = original_details.data.username
-          response.data.image_url = original_details.data.image_url
-          temp.push(response.data)
-        })
-      }
-      catch(err) { }
-    })
-    temp.sort((a, b) => {
-      a = new Date(a.date_created);
-      b = new Date(b.date_created);
-      return a > b ? -1 : a < b ? 1 : 0
-    })
-    await this.asyncForEach(temp, async item => {
-      item.date_created = new Date(item.date_created).toDateString()
-    })
-    this.setState({ tweeps: this.getUnique(temp, 'tweep_id'), isLoading: false })
-  }
-
-  //dont show tweep if it is already retweeped in the feed
-  getUnique = (arr, comp) => {
-    const unique = arr
-    .map(e => e[comp])
-    .map((e, i, final) => final.indexOf(e) === i && i)
-    .filter(e => arr[e]).map(e => arr[e]);
-    return unique;
+    }
+    catch(err) {
+      console.log(err)
+    }
   }
 
   //compose a tweep
@@ -349,7 +300,7 @@ export default class Feed extends Component {
           <Wrapper key={item.tweep_id}>
             <ImageWrapper><Image src={item.image_url} alt="pic"/></ImageWrapper>
             <Body>
-              {item.retweeper_username ? (
+              {item.retweeper_username !== item.username ? (
                 <Re>{item.retweeper_username} Retweeped</Re>
               ) : (
                 null
@@ -369,7 +320,7 @@ export default class Feed extends Component {
   }
 
   render() {
-    const { modalOpen, tweeper, tweep, message, replies } = this.state
+    const { modalOpen, tweep, message, replies } = this.state
     return (
       <Container>
         <TextWrapper><TextArea placeholder={`What's happening?`} value={this.state.tweep_msg} onChange={e => {this.setState({ tweep_msg: e.target.value })}}/></TextWrapper>
@@ -387,10 +338,10 @@ export default class Feed extends Component {
         >
           <Modal.Content>
             <ModalHeader>
-              <ModalImage src={tweeper.image_url} alt="pic"/>
+              <ModalImage src={tweep.image_url} alt="pic"/>
               <ModalDetails>
-                <ModalName>{tweeper.firstname} {tweeper.lastname}</ModalName>
-                <ModalUser><Link to={`/${tweeper.username}`}>@{tweeper.username}</Link></ModalUser>
+                <ModalName>{tweep.firstname} {tweep.lastname}</ModalName>
+                <ModalUser><Link to={`/${tweep.username}`}>@{tweep.username}</Link></ModalUser>
               </ModalDetails>
             </ModalHeader>
             <Content>{tweep.content}</Content>

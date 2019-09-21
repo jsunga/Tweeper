@@ -13,23 +13,6 @@ const Label = styled.h1`
   text-align: center;
 `
 
-const Header = styled.div`
-  padding-top: 15px;
-  font-size: 20px;
-  font-weight: bold;
-`
-
-const Body = styled.div`
-  padding-top: 10px;
-  font-size: 17px;
-`
-
-const Footer = styled.div`
-  font-size: 16px;
-  font-weight: bold;
-  padding-top: 10px;
-`
-
 export default class Register extends Component {
 
   state = {
@@ -95,11 +78,6 @@ export default class Register extends Component {
         <Message style={{textAlign: 'right'}}>
           Already have an account? <Button size='mini' onClick={this.props.event}>Log In</Button>
         </Message>
-        <Header>*DISCLAIMER</Header>
-        <Body>This application is for project and educational purposes 
-        only to practice full stack development. No copyright infringement 
-        intended towards Twitter.</Body>
-        <Footer>- Jawyn Sunga</Footer>
       </Container>
     )
   }

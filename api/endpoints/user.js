@@ -16,8 +16,6 @@ router.get('/get/:user_id', isAuthenticated, (req, res) => {
 
   db.one(`SELECT * FROM users WHERE user_id=$1`, [userId])
   .then(data => {
-    const image = data.image_url
-    data.image_url = assetResolver(image)
     res.send(data)
   })
   .catch(err => {
@@ -32,8 +30,6 @@ router.get('/retrieve/:user', (req, res) => {
 
   db.one(`SELECT * FROM users WHERE username=$1`, [username])
   .then(data => {
-    const image = data.image_url
-    data.image_url = assetResolver(image)
     res.send(data)
   })
   .catch(err => {
@@ -47,7 +43,8 @@ router.get('/all', isAuthenticated, async (req, res) => {
   try {
     let users = await db.many(`select * from users`)
     await asyncForEach(users, async item => {
-      item.image = assetResolver(item.image_url)
+      item.image = item.image_url
+      item.title = item.username
     })
     res.send(users)
   }
@@ -65,8 +62,7 @@ router.post('/upload', upload.single('avatar'), (req, res) => {
     res.send('no file received')
   } else {
     console.log('file received')
-    
-    const relativePath = req.file.path.substring(10)
+    const relativePath = `http://localhost:5000/api/assets${req.file.path.substring(10)}`
     console.log(relativePath)
 
     db.none(`update users set image_url=$2 where user_id=$1`, [userId, relativePath])

@@ -155,7 +155,6 @@ export default class ProfileFeed extends Component {
     tweeps: [],
     replies: [],
     tweep: [],
-    tweeper: [],
     tweep_id: '',
     message: '',
     noResults: false,
@@ -179,22 +178,13 @@ export default class ProfileFeed extends Component {
   // 3) get all the replies of the tweep with user details
   getReplies = async value => {
     this.setState({ modalOpen: true })
+
     let tweep = await axios.get(`/api/tweep/retrieve/${value}`)
-    tweep.data.date_created = new Date(tweep.data.date_created).toDateString()
-    let tweeper_user = await axios.get(`/api/user/get/${tweep.data.user_id}`)
-    window.history.pushState(null, null, `/${tweeper_user.data.username}/status/${value}`)
-    let data = tweeper_user.data
-    data.firstname = data.firstname.charAt(0).toUpperCase() + data.firstname.slice(1)
-    data.lastname = data.lastname.charAt(0).toUpperCase() + data.lastname.slice(1)
-    this.setState({ tweep: tweep.data, tweeper: data })
-    let users = await axios.get(`/api/reply/get/${value}`)
-    await this.asyncForEach(users.data, async item => {
-      let details = await axios.get(`/api/user/get/${item.replier_user_id}`)
-      item.image_url = details.data.image_url
-      item.username = details.data.username
-      item.date_created = new Date(item.date_created).toDateString()
-    })
-    this.setState({ replies: users.data })
+    window.history.pushState(null, null, `/${tweep.data.username}/status/${value}`)
+    this.setState({ tweep: tweep.data })
+
+    let replies = await axios.get(`/api/reply/get/${value}`)
+    this.setState({ replies: replies.data })
   }
 
   getFollowing = handle => {
@@ -214,48 +204,23 @@ export default class ProfileFeed extends Component {
     })
   }
 
-  // 1) get user details
-  // 2) get user tweeps
-  // 3) get user retweeps
-  // 4) combine tweeps and retweeps
-  // 5) fix some formatting like full name and date created
-  // 6) sort the combined list
   getDetails = async handle => {
     try {
-      let user_id = ''
-      let temp = []
       let user = await axios.get(`/api/user/retrieve/${handle}`)
       this.setState({ profile_details: user.data })
-      user_id = user.data.user_id
-      let tweeps = await axios.get(`/api/tweep/get/${user_id}`)
-      await this.asyncForEach(tweeps.data, async item => {
-        item.username = user.data.username
-        item.image_url = user.data.image_url
-      })
-      temp = tweeps.data
+
       try {
-        let retweeps = await axios.get(`/api/retweep/get/${user_id}`)
-        if (retweeps.data !== 'no retweeps') {
-          await this.asyncForEach(retweeps.data, async item => {
-            let response = await axios.get(`/api/tweep/retrieve/${item.tweep_id}`)
-            let details = await axios.get(`/api/user/get/${response.data.user_id}`)
-            response.data.date_created = item.date_created
-            response.data.username = details.data.username
-            response.data.image_url = details.data.image_url
-            temp.push(response.data)
-          })
+        let profile = await axios.get(`/api/tweep/get/profile/${handle}`)
+
+        if (profile.data === 'No data returned from the query.') {
+          this.setState({ isLoading: false })
+        } else {
+          this.setState({ tweeps: profile.data, isLoading: false })
         }
       }
-      catch(err) { }
-      temp.sort((a, b) => {
-        a = new Date(a.date_created);
-        b = new Date(b.date_created);
-        return a > b ? -1 : a < b ? 1 : 0
-      })
-      await this.asyncForEach(temp, async item => {
-        item.date_created = new Date(item.date_created).toDateString()
-      })
-      this.setState({ tweeps: temp, isLoading: false })
+      catch(err) {
+        console.log(err)
+      }
     }
     catch(err) {
       if (err.response.status === 404) {
@@ -382,7 +347,7 @@ export default class ProfileFeed extends Component {
   }
 
   render() {
-    const { isLoading, noResults, tweeps, modalOpen, tweep, tweeper, message, replies } = this.state
+    const { isLoading, noResults, tweeps, modalOpen, tweep, message, replies } = this.state
     if (isLoading === true) {
       return <Loader style={{marginTop: '75px'}} active inline='centered' />
     }
@@ -428,10 +393,10 @@ export default class ProfileFeed extends Component {
         >
           <Modal.Content>
             <ModalHeader>
-              <ModalImage src={tweeper.image_url} alt="pic"/>
+              <ModalImage src={tweep.image_url} alt="pic"/>
               <ModalDetails>
-                <ModalName>{tweeper.firstname} {tweeper.lastname}</ModalName>
-                <ModalUser><Link to={`/${tweeper.username}`}>@{tweeper.username}</Link></ModalUser>
+                <ModalName>{tweep.firstname} {tweep.lastname}</ModalName>
+                <ModalUser><Link to={`/${tweep.username}`}>@{tweep.username}</Link></ModalUser>
               </ModalDetails>
             </ModalHeader>
             <Content>{tweep.content}</Content>

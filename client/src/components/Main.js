@@ -6,6 +6,7 @@ import Register from './Register'
 import styled from 'styled-components'
 
 const Container = styled.div`
+  min-width: 1072px;
   display: flex;
   flex-direction: row;
 `

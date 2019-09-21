@@ -4,18 +4,27 @@ const { db } = require('../db')
 const isAuthenticated = require('../authentification/isAuthenticated')
 
 //get all the replies of a tweep
-router.get('/get/:tweep_id', isAuthenticated, (req, res) => {
+router.get('/get/:tweep_id', isAuthenticated, async (req, res) => {
   const tweepId = req.params.tweep_id
 
-  db.any(`SELECT * FROM replies WHERE tweep_id=$1`, [tweepId])
-  .then(data => {
-    res.send(data)
-  })
-  .catch(error => {
-    console.log(error)
+  try {
+    let replies = await db.many(`
+      SELECT replies.tweep_id, replies.content, replies.date_created,
+      replies.replier_user_id, users.username, users.image_url
+      FROM replies
+      INNER JOIN users ON replies.replier_user_id=users.user_id
+      WHERE replies.tweep_id = $1
+      ORDER BY date_created DESC
+    `, [tweepId])
+    await asyncForEach(replies, async item => {
+      item.date_created = new Date(item.date_created).toDateString()
+    })
+    res.send(replies)
+  }
+  catch(err) {
+    console.log(err)
     res.sendStatus(404)
-  })
-
+  }
 })
 
 //reply to a tweep
@@ -37,5 +46,11 @@ router.post('/', isAuthenticated, (req, res) => {
   })
 
 })
+
+asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
 module.exports = router
