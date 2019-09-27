@@ -1,4 +1,5 @@
 const express = require('express')
+const client = require('../db/redis-client')
 const router = express.Router()
 const { db } = require('../db')
 const bcrypt = require('bcryptjs')
@@ -7,36 +8,70 @@ const upload = require('../../config/photoStorage')
 const { authenticate } = require('../authentification/passport')
 const isAuthenticated = require('../authentification/isAuthenticated')
 const validator = require('../authentification/validate')
-
 const SALT = 8
 
 //get basic information of a user using user id
-router.get('/get/:user_id', isAuthenticated, (req, res) => {
+const getUser = async (req, res, next) => {
   const userId = req.params.user_id
 
-  db.one(`SELECT * FROM users WHERE user_id=$1`, [userId])
-  .then(data => {
+  try {
+    let data = await db.one(`SELECT * FROM users WHERE user_id=$1`, [userId])
+    client.setex(data.user_id, 3600, JSON.stringify(data))
     res.send(data)
-  })
-  .catch(err => {
+  } catch (err) {
     console.log(err)
     res.sendStatus(404)
+  }
+}
+
+const getCache = (req, res, next) => {
+  const userId = req.params.user_id
+
+  client.get(userId, (err, data) => {
+    if (err) throw err
+
+    if (data) {
+      console.log('getting from cache..')
+      res.send(JSON.parse(data))
+    } else {
+      next()
+    }
   })
-})
+}
+
+router.get('/get/:user_id', getCache, getUser)
 
 //get basic information of a user using username
-router.get('/retrieve/:user', (req, res) => {
+const retrieveUser = async (req, res, next) => {
   const username = req.params.user
 
-  db.one(`SELECT * FROM users WHERE username=$1`, [username])
-  .then(data => {
+  try {
+    let data = await db.one(`SELECT * FROM users WHERE username=$1`, [username])
+    client.setex(data.username, 3600, JSON.stringify(data))
+    console.log('fetching data..')
     res.send(data)
-  })
-  .catch(err => {
+  } catch (err) {
     console.log(err)
     res.sendStatus(404)
+  }
+}
+
+const retrieveCache = (req, res, next) => {
+  const username = req.params.user
+
+  client.get(username, (err, data) => {
+    if (err) throw err
+
+    if (data) {
+      console.log('getting from cache..')
+      res.send(JSON.parse(data))
+    } else {
+      next()
+    }
   })
-})
+}
+
+router.get('/retrieve/:user', retrieveCache, retrieveUser)
 
 //get all users in the database
 router.get('/all', isAuthenticated, async (req, res) => {
@@ -62,7 +97,7 @@ router.post('/upload', upload.single('avatar'), (req, res) => {
     res.send('no file received')
   } else {
     console.log('file received')
-    const relativePath = `http://localhost:5000/api/assets${req.file.path.substring(10)}`
+    const relativePath = `http://13.52.178.103/api/assets${req.file.path.substring(10)}`
     console.log(relativePath)
 
     db.none(`update users set image_url=$2 where user_id=$1`, [userId, relativePath])

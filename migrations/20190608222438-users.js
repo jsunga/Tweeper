@@ -37,7 +37,7 @@ module.exports = {
           },
           image_url: {
             type: Sequelize.STRING,
-            defaultValue: 'http://localhost:5000/api/assets/avatar.png',
+            defaultValue: 'http://13.52.178.103/api/assets/avatar.png',
             allowNull: false
           },
           followers: {
